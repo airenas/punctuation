@@ -2,3 +2,6 @@
 tools/bin/***
 tools/go/go.sum
 ***/__pycache__/***
+data5/***
+tf/***
+tests/***
