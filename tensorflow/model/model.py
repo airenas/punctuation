@@ -6,7 +6,7 @@ import layers.attention as la
 import layers.lateFusion as llf
 
 
-def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100, hidden=100, gpu=False):
+def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100, hidden=100, gpu=False, optimizer='adam'):
     # input
     word_ids = keras.Input(shape=(timesteps, ), dtype='int32', name='word_ids')
     word_vec = layers.Embedding(output_dim=word_vector_size,
@@ -33,7 +33,7 @@ def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100
 
     # model
     model = keras.Model(inputs=word_ids, outputs=out, name='punctuation')
-    model.compile(loss='categorical_crossentropy', optimizer='adam')
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer)
     return model
 
 
