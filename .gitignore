@@ -5,3 +5,4 @@ tools/go/go.sum
 data5/***
 tf/***
 tests/***
+examples/goload/model.tf
