@@ -1,6 +1,8 @@
 from collections import namedtuple
 from tensorflow import keras
 import numpy as np
+import os
+from tqdm import tqdm
 
 PUNCTUATION_VOCABULARY = ["_SPACE", ",COMMA", ".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK", ":COLON", ";SEMICOLON", "-DASH"]
 PUNCTUATION_MAPPING = {}
@@ -14,13 +16,16 @@ MAX_WORD_VOCABULARY_SIZE=200000
 MData = namedtuple('MData', 'X, y')
 
 def load(file):
+    fs = os.stat(file).st_size
     resX = []
     resY = []
     with open(file, 'r') as f:
-        for l in f:
-            ld = eval(l)
-            resX.append(ld[0])
-            resY.append(keras.utils.to_categorical(ld[1], num_classes = len(PUNCTUATION_VOCABULARY)))
+        with tqdm(total=fs, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+            for l in f:
+                ld = eval(l)
+                resX.append(ld[0])
+                resY.append(keras.utils.to_categorical(ld[1], num_classes = len(PUNCTUATION_VOCABULARY)))
+                pbar.update(len(l))
     return MData(X = np.array(resX).reshape(len(resX), len(resX[0])), y = np.array(resY))
 
 class Generator(keras.utils.Sequence):
