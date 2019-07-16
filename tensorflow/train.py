@@ -1,5 +1,6 @@
 import sys
 import trainT
+import data.data as data
 
 ############ parameters
 if len(sys.argv) > 1:
@@ -10,15 +11,34 @@ else:
 if len(sys.argv) > 2:
     mPrefix = sys.argv[2]
 else:
-    sys.exit("Model file prefix argument missing")    
+    sys.exit("Model file prefix argument missing")   
+
+minibatches=128
+hidden=256
+####################################################################################
+# data
+####################################################################################
+print("Read vocabulary: ", dataDir + "/vocabulary")
+vocab = data.readVocabulary(dataDir + "/vocabulary")  
+
+print("Loading train data: ", dataDir + "/train")
+trainData = data.load(dataDir + "/train")
+print("Train data len = ", len(trainData.X))
+
+print("Loading validation data: ", dataDir + "/dev")
+validationData = data.load(dataDir + "/dev")
+print("Validation data len = ", len(validationData.X))
+####################################################################################     
 
 params = trainT.Params(
-    vocab = dataDir + "/vocabulary",
-    trainData = dataDir + "/train",
-    validationData = dataDir + "/dev",
+    vocab = vocab,
+    trainData = trainData,
+    validationData = validationData,
     modelFile = mPrefix + '_{epoch:02d}.h5',
-    hidden = 512,
-    gpu = True
+    hidden = hidden,
+    wordVecSize = hidden,
+    minibatches = minibatches,
+    gpu = False
 )
 ############ training
 trainT.trainModel(params)
