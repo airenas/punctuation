@@ -55,7 +55,7 @@ During the training all models are saved in *keras* format. To save a model in a
 python tensorflow/saveAsTF.py <hd5ModelFile> <tfModelOutputDir>
 ```
 ## Loading model with *go*
-Sample *go* code on how to load the trained tensorflow model: [examples/goload/loadtf.go](examples/goload/loadtf.go). To compile the sample *go* code you need to install *tensorflow* library and configure *LD_LIBRARY_PATH* [https://www.tensorflow.org/install/lang_go](https://www.tensorflow.org/install/lang_go)
+Sample *go* code on how to load the trained tensorflow model: [examples/goload/loadtf.go](examples/goload/loadtf.go). To compile the sample *go* code you need to install *tensorflow* library and configure *LD_LIBRARY_PATH*. See [https://www.tensorflow.org/install/lang_go](https://www.tensorflow.org/install/lang_go)
 
 ---
 ### Author
