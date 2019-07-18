@@ -2,7 +2,7 @@
 Punctuation restoration using TensorFlow
 
 ## Introduction
-The repository was inspired by **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. I did not want to use *phyton* in serving the model. So I tried  to change the *Theano* to *TensorFlow*. **Attention** and **Late Fusion** were the big challanges for me, I'm not sure they are 100% correct. I compared the results with **punctuator2** and they looked very similar.
+The repository was inspired by **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. I did not want to use *phyton* in serving the model. So I tried to change *Theano* to *TensorFlow*. **Attention** and **Late Fusion** layers were the big challanges for me, I'm not sure they are 100% correct. I compared the results with **punctuator2** and they looked very similar.
 
 ## Requirements
 Implementation was tested with *python* 3.7.3. The training code uses modules: 
@@ -17,7 +17,7 @@ pip install keras
 ```
 
 ## Data preparation
-For the initial data requirements see **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. You can configure punctuation and vocabulary size in the [tensorflow/data/data.py](tensorflow/data/data.py). To prepare the data for training:
+For the initial data requirements see **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. You can configure punctuation and vocabulary size in the [tensorflow/data/data.py](tensorflow/data/data.py). To prepare the data for the training:
 ```bash
 python tensorflow/punctuator2/data.py <initialDataDir> <dataDir>
 ```
@@ -31,12 +31,12 @@ python ../tensorflow/train.py <dataDir> <modelPrefix>
 The trained model is saved as *keras* hd5 format in the working folder *model1*. 
 
 ## Optimization
-There is the python script to optimize  hyperparameters of a model using sherpa. See  [optimize/optimize.py](optimize/optimize.py). The sample to start optimization:
+There is the python script to optimize hyperparameters of a model using *sherpa* tool. See  [optimize/optimize.py](optimize/optimize.py). The sample to start an optimization:
 ```bash
 mkdir optim1 && cd optim1
 python ../optimize/optimize.py <dataDir> 
 ```
-The all models are saved in in the working folder *optim1*.
+All models are saved in in the working folder *optim1*.
 
 
 ## Prediction, error calculation
@@ -44,19 +44,18 @@ To predict punctuation for a test text:
 ```bash
 python tensorflow/predict.py <testTextFile> <vocaburaly> <hd5ModelFile> <predictedOutputFile>
 ```
-To calculate prediction error scores:
+To evaluate error scores of the prediction:
 ```bash
 python tensorflow/punctuator2/error_calculator.py <testTextFile> <predictedOutputFile>
 ```
 
-## Saving as pure *tensorflow* model
-During the training all models are saved in *keras* format. To save a model in pure *tensorflow* format there is a script:
+## Saving as a pure *tensorflow* model
+During the training all models are saved in *keras* format. To save a model in a pure *tensorflow* format there is a script:
 ```bash
 python tensorflow/saveAsTF.py <hd5ModelFile> <tfModelOutputDir>
 ```
-
 ## Loading model with *go*
-todo
+Sample *go* code on how to load the trained tensorflow model: [examples/goload/loadtf.go](examples/goload/loadtf.go). To compile the sample *go* code you need to install *tensorflow* library and configure *LD_LIBRARY_PATH* [https://www.tensorflow.org/install/lang_go](https://www.tensorflow.org/install/lang_go)
 
 ---
 ### Author
