@@ -101,7 +101,7 @@ if len(sys.argv) > 4:
     output_file = sys.argv[4]
 else:
     sys.exit("Output file path argument missing")
-
+############################################################################
 
 print('Loading vocab')
 vocab = data.readVocabulary(vocab_file)

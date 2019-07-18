@@ -28,7 +28,7 @@ To train one model, you can configure model parameters in [tensorflow/train.py](
 mkdir model1 && cd model1
 python ../tensorflow/train.py <dataDir> <modelPrefix>
 ```
-The trained model is saved as keras hd5 format in the working folder *model1*. 
+The trained model is saved as *keras* hd5 format in the working folder *model1*. 
 
 ## Optimization
 There is the python script to optimize  hyperparameters of a model using sherpa. See  [optimize/optimize.py](optimize/optimize.py). The sample to start optimization:
@@ -40,11 +40,20 @@ The all models are saved in in the working folder *optim1*.
 
 
 ## Prediction, error calculation
-todo
+To predict punctuation for a test text:
+```bash
+python tensorflow/predict.py <testTextFile> <vocaburaly> <hd5ModelFile> <predictedOutputFile>
+```
+To calculate prediction error scores:
+```bash
+python tensorflow/punctuator2/error_calculator.py <testTextFile> <predictedOutputFile>
+```
 
 ## Saving as pure *tensorflow* model
-
-todo
+During the training all models are saved in *keras* format. To save a model in pure *tensorflow* format there is a script:
+```bash
+python tensorflow/saveAsTF.py <hd5ModelFile> <tfModelOutputDir>
+```
 
 ## Loading model with *go*
 todo
