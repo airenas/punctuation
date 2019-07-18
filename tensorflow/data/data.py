@@ -3,7 +3,7 @@ from tensorflow import keras
 import numpy as np
 import os
 from tqdm import tqdm
-
+####################################################################################
 PUNCTUATION_VOCABULARY = ["_SPACE", ",COMMA", ".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK", ":COLON", ";SEMICOLON", "-DASH"]
 PUNCTUATION_MAPPING = {}
 EOS_TOKENS = {".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK"}
@@ -12,6 +12,7 @@ UNK = "<UNK>"
 SPACE = "_SPACE"
 MAX_SUBSEQUENCE_LEN = 50
 MAX_WORD_VOCABULARY_SIZE=200000
+####################################################################################
 
 MData = namedtuple('MData', 'X, y')
 
