@@ -6,3 +6,8 @@ data5/***
 tf/***
 tests/***
 examples/goload/model.tf
+info/***
+data*/***
+examples/goload/m256/***
+examples/goload/go.sum
+optimize/results.csv
