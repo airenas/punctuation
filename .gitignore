@@ -11,3 +11,4 @@ data*/***
 examples/goload/m256/***
 examples/goload/go.sum
 optimize/results.csv
+examples/goload/vocabulary
