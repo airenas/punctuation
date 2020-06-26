@@ -1,18 +1,17 @@
-
 package main
 
 import (
-	"bitbucket.org/airenas/kirtis/tools/go/utils"
 	"bufio"
 	"flag"
 	"io"
 	"os"
 	"strings"
-	
+
+	"bitbucket.org/airenas/kirtis/tools/go/utils"
+
 	"github.com/pkg/errors"
 
 	up "github.com/airenas/punctuator/tools/go/utils"
-
 )
 
 func main() {
@@ -45,28 +44,27 @@ func change(line string) string {
 	strs := strings.Split(line, " ")
 	res := ""
 	a := ""
-	for i, w := range strs{
-		if (w != ""){
-			res = res + a + changeWord(w, i == len(strs) - 1)
+	for i, w := range strs {
+		if w != "" {
+			res = res + a + changeWord(w, i == len(strs)-1)
 			a = " "
 		}
 	}
 	return res
 }
 
-func changeWord(w string, last bool) string{
-	rs := []rune (w)
-	l := len(rs) - 1
+func changeWord(w string, last bool) string {
+	rs := []rune(w)
 	res := ""
-	lr := rs[l]
-	ch, ok := up.NNPunctuations[lr]
-	if (ok && (lr != '.' || last)){
-		if (l > 0){
-			res = string(rs[0:l]) + " "
+	for l := len(rs) - 1; l >= 0; l-- {
+		lr := rs[l]
+		ch, ok := up.NNPunctuations[lr]
+		if ok && (lr != '.' || last || l == 0) {
+			res = ch + " " + res
+		} else {
+			res = string(rs[:l+1]) + " " + res
+			break
 		}
-		res = res + ch
-	} else {
-		res = w
 	}
-	return res
+	return strings.TrimSpace(res)
 }

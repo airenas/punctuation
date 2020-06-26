@@ -25,3 +25,12 @@ func TestInnerDot(t *testing.T) {
 func TestComma(t *testing.T) {
 	assert.Equal(t, "mama ,COMMA <NUM> ?QUESTIONMARK", change("mama, <NUM>?"))
 }
+
+func TestSeveral(t *testing.T) {
+	assert.Equal(t, "mama ,COMMA ?QUESTIONMARK .PERIOD", change("mama, ?."))
+	assert.Equal(t, "mama ,COMMA -DASH ?QUESTIONMARK", change("mama,-?"))
+}
+
+func TestDotAlone(t *testing.T) {
+	assert.Equal(t, "mama .PERIOD olia", change("mama . olia"))
+}
