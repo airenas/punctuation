@@ -70,7 +70,11 @@ $(WORK_DIR)/config/features.txt: $(WORK_DIR)/config/unigram_probs.txt
                             --top-word-features=$(TOP_WORDS) \
                             --max-ngram-order=3 \
                             $(WORK_DIR)/config/words.txt > $@
-build: info $(WORK_DIR)/config/features.txt
+$(WORK_DIR)/config/word_feats.txt: $(WORK_DIR)/config/features.txt
+	python $(KALDI_ROOT)/scripts/rnnlm/get_word_features.py --unigram-probs=$(WORK_DIR)/config/unigram_probs.txt \
+		$(WORK_DIR)/config/words.txt $(WORK_DIR)/config/features.txt > $@
+
+build: info $(WORK_DIR)/config/word_feats.txt
 #################################################################################################
 clean:
 	rm -rf $(WORK_DIR)
