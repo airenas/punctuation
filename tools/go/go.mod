@@ -1,5 +1,7 @@
 module github.com/airenas/punctuator/tools/go
 
+go 1.14
+
 require (
 	bitbucket.org/airenas/kirtis/tools/go v1.0.0
 	github.com/pkg/errors v0.8.1
