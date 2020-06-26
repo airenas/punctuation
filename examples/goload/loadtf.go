@@ -114,7 +114,7 @@ func toNum(strs []string, vocab map[string]int32) ([]int32) {
         k, f := vocab[s]
         if !f {
             k = vocab["<UNK>"]             
-
+            
         }
         result = append(result, k)    
     }
