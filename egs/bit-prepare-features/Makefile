@@ -66,7 +66,7 @@ $(WORK_DIR)/config/unigram_probs.txt: $(WORK_DIR)/config/words.txt $(WORK_DIR)/c
 $(WORK_DIR)/config/features.txt: $(WORK_DIR)/config/unigram_probs.txt
 	python $(KALDI_ROOT)/scripts/rnnlm/choose_features.py --unigram-probs=$(WORK_DIR)/config/unigram_probs.txt \
                             --use-constant-feature=true \
-                            --special-words='<s>,<brk>,<UNK>' \
+                            --special-words='<s>,<brk>,<UNK>,<NUM>,<NUM>.' \
                             --top-word-features=$(TOP_WORDS) \
                             --max-ngram-order=3 \
                             $(WORK_DIR)/config/words.txt > $@
