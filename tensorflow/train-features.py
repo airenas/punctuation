@@ -5,6 +5,8 @@ import features.features as features
 import trainT
 
 ####################################################################################
+from data import data
+
 minibatches = 128
 hidden = 256
 
@@ -15,15 +17,20 @@ hidden = 256
 def prepareTrainParams(args):
     print("Read Features from: ", args.data_dir + "/features.txt", file=sys.stderr)
     feat = features.Features(args.data_dir + "/features.txt")
-    print("Read %d features." % feat.len(), file=sys.stderr)
+
+    print("Loading train data: ", args.data_dir + "/train", file=sys.stderr)
+    train_data = data.load(args.data_dir + "/train")
+
+    print("Loading validation data: ", args.data_dir + "/dev", file=sys.stderr)
+    validation_data = data.load(args.data_dir + "/dev")
 
     mfp = args.model_dir + "/"
     if args.model_dir is None:
         mfp = ""
 
     params = trainT.Params(
-        trainFile=args.data_dir + "/train",
-        validationFile=args.data_dir + "/dev",
+        trainData=train_data,
+        validationData=validation_data,
         modelFile=mfp + args.prefix + '_{epoch:02d}.h5',
         hidden=hidden,
         wordVecSize=hidden,

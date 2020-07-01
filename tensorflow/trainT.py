@@ -6,7 +6,7 @@ import data.data as data
 import model.model as model
 
 ####################################################################################
-Params = namedtuple('Params', ('vocab', 'trainFile', 'validationFile', 'hidden', 'wordVecSize',
+Params = namedtuple('Params', ('vocab', 'trainData', 'validationData', 'hidden', 'wordVecSize',
                                'minibatches', 'modelFile', 'maxEpochs', 'gpu', 'callback', 'optimizer',
                                'features'),
                     defaults=(None, None, None, 100, 100, 128, None, 10, False, None, 'adam', None))
@@ -18,8 +18,8 @@ Params = namedtuple('Params', ('vocab', 'trainFile', 'validationFile', 'hidden',
 def trainModel(params):
     if params.features is None:
         assert params.vocab, "No vocab provided"
-    assert params.trainFile, "No trainFile"
-    assert params.validationFile, "No validationFile"
+    assert params.trainData, "No trainData"
+    assert params.validationData, "No validationData"
     assert params.modelFile, "No modelFile provided"
 
     if params.features is None:
@@ -33,9 +33,8 @@ def trainModel(params):
     print("Use GPU        :", params.gpu)
     print("Minibatches    :", params.minibatches)
     print("Models out dir :", params.modelFile)
-    if params.features is None:
-        print("Train Data     :", len(params.trainData.X))
-        print("Validation Data:", len(params.validationData.X))
+    print("Train Data     :", params.trainData.len)
+    print("Validation Data:", params.validationData.len)
 
     m = model.init(vocabularySize=v_size,
                    punctuationSize=len(data.PUNCTUATION_VOCABULARY),
@@ -47,20 +46,12 @@ def trainModel(params):
     # keras.utils.plot_model(m, 'punc.png')
     # keras.utils.plot_model(m, 'punc_full.png', show_shapes=True)
 
-    print("Loading train data: ", params.trainFile, file=sys.stderr)
-    train_data = data.load(params.trainFile)
-    print("Train data len = ", train_data.len, file=sys.stderr)
-
-    print("Loading validation data: ", params.validationFile, file=sys.stderr)
-    validation_data = data.load(params.validationFile)
-    print("Validation data len = ", validation_data.len, file=sys.stderr)
-
     if params.features is None:
-        gen_train = data.Generator(X=train_data.X, y=train_data.y, batch_size=params.minibatches)
-        gen_valid = data.Generator(X=validation_data.X, y=validation_data.y, batch_size=params.minibatches)
+        gen_train = data.Generator(X=params.trainData.X, y=params.trainData.y, batch_size=params.minibatches)
+        gen_valid = data.Generator(X=params.validationData.X, y=params.validationData.y, batch_size=params.minibatches)
     else:
-        gen_train = data.FeaturesGenerator(m_data=train_data, features=params.features, batch_size=params.minibatches)
-        gen_valid = data.FeaturesGenerator(m_data=validation_data, features=params.features,
+        gen_train = data.FeaturesGenerator(m_data=params.trainData, features=params.features, batch_size=params.minibatches)
+        gen_valid = data.FeaturesGenerator(m_data=params.validationData, features=params.features,
                                            batch_size=params.minibatches)
 
     print("Training", file=sys.stderr)

@@ -21,12 +21,18 @@ else:
 ####################################################################################
 print("Read vocabulary: ", dataDir + "/vocabulary")
 vocab = data.readVocabulary(dataDir + "/vocabulary")  
+
+print("Loading train data: ", dataDir + "/train")
+trainData = data.load(dataDir + "/train")
+
+print("Loading validation data: ", dataDir + "/dev")
+validationData = data.load(dataDir + "/dev")
 ####################################################################################
 
 params = trainT.Params(
     vocab = vocab,
-    trainFile = dataDir + "/train",
-    validationFile = dataDir + "/train",
+    trainData = trainData,
+    validationData = validationData,
     modelFile = mPrefix + '_{epoch:02d}.h5',
     hidden = hidden,
     wordVecSize = hidden,
