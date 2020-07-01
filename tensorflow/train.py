@@ -21,20 +21,12 @@ else:
 ####################################################################################
 print("Read vocabulary: ", dataDir + "/vocabulary")
 vocab = data.readVocabulary(dataDir + "/vocabulary")  
-
-print("Loading train data: ", dataDir + "/train")
-trainData = data.load(dataDir + "/train")
-print("Train data len = ", len(trainData.X))
-
-print("Loading validation data: ", dataDir + "/dev")
-validationData = data.load(dataDir + "/dev")
-print("Validation data len = ", len(validationData.X))
-####################################################################################     
+####################################################################################
 
 params = trainT.Params(
     vocab = vocab,
-    trainData = trainData,
-    validationData = validationData,
+    trainFile = dataDir + "/train",
+    validationFile = dataDir + "/train",
     modelFile = mPrefix + '_{epoch:02d}.h5',
     hidden = hidden,
     wordVecSize = hidden,

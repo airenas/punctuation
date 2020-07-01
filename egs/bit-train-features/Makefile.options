@@ -1,0 +1,6 @@
+-include Makefile.options.local
+
+INPUT_DIR?=../bit-prepare-fetures/data
+WORK_DIR?=data
+MODEL_PREFIX?=m1
+MODEL_TEST?=03

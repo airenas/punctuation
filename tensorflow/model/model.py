@@ -1,17 +1,20 @@
-from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras import backend as K
 
 import layers.attention as la
 import layers.lateFusion as llf
+from tensorflow import keras
 
 
-def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100, hidden=100, gpu=False, optimizer='adam'):
+def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100, hidden=100, gpu=False,
+         optimizer='adam', use_features=False):
     # input
-    word_ids = keras.Input(shape=(timesteps, ), dtype='int32', name='word_ids')
-    word_vec = layers.Embedding(output_dim=word_vector_size,
-                                input_dim=vocabularySize, input_length=1, name='word_vec')(word_ids)
-
+    if not use_features:
+        word_ids = keras.Input(shape=(timesteps,), dtype='int32', name='word_ids')
+        word_vec = layers.Embedding(output_dim=word_vector_size, input_dim=vocabularySize, input_length=1,
+                                    name='word_vec')(word_ids)
+    else:
+        word_ids = keras.Input(shape=(timesteps, vocabularySize,), dtype='float32', name='feat_ids')
+        word_vec = layers.Dense(word_vector_size, input_dim=vocabularySize, name='feat_matrix', use_bias=True)(word_ids)
     # encoder layer
     gru_input, f_state, b_state = layers.Bidirectional(
         __createGRULayer(hidden, gpu, True, 'gru_input'))(word_vec)
