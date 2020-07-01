@@ -1,7 +1,7 @@
-import numpy as np
 import os
-import sys
 from collections import namedtuple
+
+import numpy as np
 from tqdm import tqdm
 
 from tensorflow import keras
@@ -76,9 +76,10 @@ class FeaturesGenerator(keras.utils.Sequence):
         # print("Get %d." % batch_idx, file=sys.stderr)
         Xw = self.m_data.X[batch_idx * self.batch_size:(batch_idx + 1) * self.batch_size]
         y = self.m_data.y[batch_idx * self.batch_size:(batch_idx + 1) * self.batch_size]
-        X = np.zeros(self.batch_size * self.features.len() * len(self.m_data.X[0]), dtype=np.float32).reshape((self.batch_size, len(self.m_data.X[0]), self.features.len()))
+        X = np.zeros(self.batch_size * self.features.len() * len(self.m_data.X[0]), dtype=np.float32).reshape(
+            (self.batch_size, len(self.m_data.X[0]), self.features.len()))
         for i in range(len(Xw)):
-            for wi in range (len(Xw[i])):
+            for wi in range(len(Xw[i])):
                 self.features.setWordFeaturesTo(Xw[i, wi], X[i, wi])
         # print("shapes x, y", X.shape, y.shape)
         return X, y
