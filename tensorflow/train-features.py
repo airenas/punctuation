@@ -32,8 +32,8 @@ def prepareTrainParams(args):
         trainData=train_data,
         validationData=validation_data,
         modelFile=mfp + args.prefix + '_{epoch:02d}.h5',
-        hidden=hidden,
-        wordVecSize=hidden,
+        hidden=args.hidden,
+        wordVecSize=args.word_vec_size,
         minibatches=minibatches,
         gpu=False,
         features=feat
@@ -41,7 +41,7 @@ def prepareTrainParams(args):
     return params
 
 
-def takeCmdParams(argv):
+def take_cmd_params(argv):
     parser = argparse.ArgumentParser(description="This script trains model with word features",
                                      epilog="E.g. " + sys.argv[0] + " ",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -49,12 +49,14 @@ def takeCmdParams(argv):
     parser.add_argument("--data-dir", default='', type=str, help="Train data directory", required=True)
     parser.add_argument("--model-dir", default='', type=str, help="Model save directory", required=False)
     parser.add_argument("--prefix", default='m1', type=str, help="Output model prefix")
+    parser.add_argument("--hidden", default='256', type=int, help="Hidden units in NN layer")
+    parser.add_argument("--word-vec-size", default='1024', type=int, help="Word vector size")
     args = parser.parse_args(args=argv)
     return args
 
 
 def main(argv):
-    args = takeCmdParams(argv)
+    args = take_cmd_params(argv)
     print("Starting", file=sys.stderr)
     params = prepareTrainParams(args)
     trainT.trainModel(params)

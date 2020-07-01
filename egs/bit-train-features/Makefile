@@ -19,7 +19,8 @@ $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
 	touch $@
 
 $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
-	python $(MAIN_DIR)/tensorflow/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model
+	python $(MAIN_DIR)/tensorflow/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model \
+		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN)
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
