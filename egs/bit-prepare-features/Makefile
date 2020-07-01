@@ -56,6 +56,8 @@ $(WORK_DIR)/config/words.txt: $(WORK_DIR)/text/train.txt | $(WORK_DIR)/config
 	echo "<brk> $(n)" >> $@
 	$(eval n=`cat $@ | wc -l`)
 	echo "<s> $(n)" >> $@
+	$(eval n=`cat $@ | wc -l`)
+	echo "</S> $(n)" >> $@
 
 $(WORK_DIR)/config/unigram_probs.txt: $(WORK_DIR)/config/words.txt $(WORK_DIR)/config/data_weights.txt $(WORK_DIR)/text/train.counts
 	python $(KALDI_ROOT)/scripts/rnnlm/get_unigram_probs.py --vocab-file=$(WORK_DIR)/config/words.txt \
@@ -66,7 +68,7 @@ $(WORK_DIR)/config/unigram_probs.txt: $(WORK_DIR)/config/words.txt $(WORK_DIR)/c
 $(WORK_DIR)/config/features.txt: $(WORK_DIR)/config/unigram_probs.txt
 	python $(KALDI_ROOT)/scripts/rnnlm/choose_features.py --unigram-probs=$(WORK_DIR)/config/unigram_probs.txt \
                             --use-constant-feature=true \
-                            --special-words='<s>,<brk>,<UNK>,<NUM>' \
+                            --special-words='<s>,<brk>,<UNK>,<NUM>,</S>' \
                             --top-word-features=$(TOP_WORDS) \
                             --include-unigram-feature=false \
                             --max-ngram-order=3 \
