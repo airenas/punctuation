@@ -4,6 +4,7 @@ import io
 import sys
 
 import numpy as np
+from tqdm import tqdm
 
 import data.data as data
 import model.model as model
@@ -23,18 +24,6 @@ def convert_punctuation_to_readable(punct_token):
     else:
         return punct_token[0]
 
-
-def progress(count, total, suffix=''):
-    bar_len = 60
-    filled_len = int(round(bar_len * count / float(total)))
-
-    percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
-
-    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', suffix))
-    sys.stdout.flush()  # As suggested by Rom Ruben        
-
-
 def convert(words, features):
     res = np.zeros(features.len() * len(words), dtype=np.float32).reshape((len(words), features.len()))
     for i in range(len(words)):
@@ -43,54 +32,51 @@ def convert(words, features):
 
 
 def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_function):
-    l = len(text)
-    info = "Punctuating"
     i = 0
-    progress(i, l, info)
-    while True:
-        subsequence = text[i:i + MAX_SUBSEQUENCE_LEN]
-        if len(subsequence) == 0:
-            break
-        if len(subsequence) < MAX_SUBSEQUENCE_LEN:
-            subsequence = subsequence + ([data.END] * (MAX_SUBSEQUENCE_LEN - len(subsequence)))
+    with tqdm(total=len(text), desc="Punctuating", file=sys.stderr) as pbar:
+        while True:
+            subsequence = text[i:i + MAX_SUBSEQUENCE_LEN]
+            if len(subsequence) == 0:
+                break
+            if len(subsequence) < MAX_SUBSEQUENCE_LEN:
+                subsequence = subsequence + ([data.END] * (MAX_SUBSEQUENCE_LEN - len(subsequence)))
 
-        converted_subsequence = convert(subsequence, features)
-        shape = converted_subsequence.shape
-        a = np.array(converted_subsequence).reshape((1, shape[0], shape[1]))
+            converted_subsequence = convert(subsequence, features)
+            shape = converted_subsequence.shape
+            a = np.array(converted_subsequence).reshape((1, shape[0], shape[1]))
 
-        y = predict_function(a)
+            y = predict_function(a)
 
-        f_out.write(subsequence[0])
+            f_out.write(subsequence[0])
 
-        last_eos_idx = 0
-        punctuations = []
-        for y_t in y[0]:
-            p_i = np.argmax(y_t.flatten())
-            punctuation = reverse_punctuation_vocabulary[p_i]
-            punctuations.append(punctuation)
-            if punctuation in data.EOS_TOKENS:
-                last_eos_idx = len(punctuations)  # we intentionally want the index of next element
+            last_eos_idx = 0
+            punctuations = []
+            for y_t in y[0]:
+                p_i = np.argmax(y_t.flatten())
+                punctuation = reverse_punctuation_vocabulary[p_i]
+                punctuations.append(punctuation)
+                if punctuation in data.EOS_TOKENS:
+                    last_eos_idx = len(punctuations)  # we intentionally want the index of next element
 
-        if subsequence[-1] == data.END:
-            step = len(subsequence) - 1
-        elif last_eos_idx != 0:
-            step = last_eos_idx
-        else:
-            step = len(subsequence) - 1
+            if subsequence[-1] == data.END:
+                step = len(subsequence) - 1
+            elif last_eos_idx != 0:
+                step = last_eos_idx
+            else:
+                step = len(subsequence) - 1
 
-        for j in range(step):
-            f_out.write(" " + punctuations[j] + " " if punctuations[j] != data.SPACE else " ")
-            if j < step - 1:
-                if subsequence[1 + j] == data.END:
-                    break
-                f_out.write(subsequence[1 + j])
+            for j in range(step):
+                f_out.write(" " + punctuations[j] + " " if punctuations[j] != data.SPACE else " ")
+                if j < step - 1:
+                    if subsequence[1 + j] == data.END:
+                        break
+                    f_out.write(subsequence[1 + j])
 
-        if subsequence[-1] == data.END:
-            break
+            if subsequence[-1] == data.END:
+                break
 
-        i += step
-        progress(i, l, info)
-
+            i += step
+            pbar.update(step)
 
 ############################################################################
 def predict(args):
