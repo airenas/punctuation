@@ -4,7 +4,7 @@ Punctuation restoration using TensorFlow
 ## Introduction
 The repository was inspired by **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. I did not want to use *phyton* in serving the model. So I tried to change *Theano* to *TensorFlow*. **Attention** and **Late Fusion** layers were the big challanges for me, I'm not sure they are 100% correct. I compared the results with **punctuator2** and they looked very similar.
 
-##NEW: Feature representation of words
+## NEW: Feature representation of words
 Added support of [Kaldi](https://github.com/kaldi-asr/kaldi) like word features. Word hashing was originally described in [Learning deep structured semantic models for web search using clickthrough data - by Po-Sen Huang et al. 2013](https://posenhuang.github.io/papers/cikm2013_DSSM_fullversion.pdf). It allows to use nearly unlimited vocabulary instead of a shortlist for RNN training.
 Samples added for [data prepareation](egs/bit-prepare-features) and [training](egs/bit-train-features). 
 
