@@ -30,6 +30,10 @@ $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $
 $(WORK_DIR)/score.txt: $(WORK_DIR)/predict/test.txt | $(WORK_DIR)/predict
 	python $(MAIN_DIR)/tensorflow/punctuator2/error_calculator.py $(INPUT_DIR)/final/lt.test.txt $(WORK_DIR)/predict/test.txt > $@
 #################################################################################################
+to-tf-format: $(WORK_DIR)/model/.done
+	rm -rf $(WORK_DIR)/tf
+	python $(MAIN_DIR)/tensorflow/saveAsTF.py $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 $(WORK_DIR)/tf
+#################################################################################################
 build: info $(WORK_DIR)/model/.done
 predict: $(WORK_DIR)/score.txt
 	cat $^
