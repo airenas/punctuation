@@ -35,7 +35,7 @@ def prepareTrainParams(args):
         hidden=args.hidden,
         wordVecSize=args.word_vec_size,
         minibatches=minibatches,
-        gpu=False,
+        gpu=args.use_gpu,
         features=feat
     )
     return params
@@ -51,6 +51,7 @@ def take_cmd_params(argv):
     parser.add_argument("--prefix", default='m1', type=str, help="Output model prefix")
     parser.add_argument("--hidden", default='256', type=int, help="Hidden units in NN layer")
     parser.add_argument("--word-vec-size", default='1024', type=int, help="Word vector size")
+    parser.add_argument("--use-gpu", action='store_true', help="Use GPU for training")
     args = parser.parse_args(args=argv)
     return args
 

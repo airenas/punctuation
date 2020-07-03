@@ -1,6 +1,9 @@
 -include Makefile.options
 MAIN_DIR=${CURDIR}/../..
 F_DIR=$(WORK_DIR)/final
+ifeq ($(GPU), 1)
+    GPU_SETTING=--use-gpu
+endif
 #################################################################################################
 info:
 	@echo "Input: $(INPUT_DIR)"
@@ -20,7 +23,7 @@ $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
 
 $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
 	python $(MAIN_DIR)/tensorflow/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model \
-		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN)
+		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN) $(GPU_SETTING)
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $(WORK_DIR)/predict

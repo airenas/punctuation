@@ -79,6 +79,11 @@ $(WORK_DIR)/config/word_feats.txt: $(WORK_DIR)/config/features.txt
 
 build: info $(WORK_DIR)/config/word_feats.txt
 #################################################################################################
+put-data:
+	$(SSH_CMD) "mkdir -p $(REMOTE_DIR)"
+	$(PUT_CMD) $(F_DIR)/*.txt $(PUT_DIR)/final/
+	$(PUT_CMD) $(WORK_DIR)/config/features.txt $(PUT_DIR)/config/
+#################################################################################################
 clean:
 	rm -rf $(WORK_DIR)
 #################################################################################################

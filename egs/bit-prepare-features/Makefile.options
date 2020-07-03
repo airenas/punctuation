@@ -6,4 +6,5 @@ INPUT_FILE?=../../text/BIT_merged_unique.txt
 WORK_DIR?=data
 SENTENCES?=10000000000 # take all
 TOP_WORDS?=5000
+PUT_DIR=$(USER_SERVER):$(REMOTE_DIR)
 maxJobs=4
