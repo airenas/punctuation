@@ -1,12 +1,14 @@
 -include Makefile.options
 MAIN_DIR=${CURDIR}/../..
-F_DIR=$(WORK_DIR)/final
 ifeq ($(GPU), 1)
     GPU_SETTING=--use-gpu
 endif
 #################################################################################################
 info:
-	@echo "Input: $(INPUT_DIR)"
+	@echo "Input	: $(INPUT_DIR)"
+	@echo "GPU		: $(GPU)"
+	@echo "Hidden	: $(HIDDEN)"
+	@echo "Word vec	: $(WORD_VEC_SIZE)"
 #################################################################################################
 $(WORK_DIR)/data:
 	mkdir -p $@
