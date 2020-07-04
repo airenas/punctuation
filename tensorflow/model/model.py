@@ -46,6 +46,6 @@ def load(file):
 
 
 def __createGRULayer(hidden, gpu, returnState, lName):
-    if gpu:
-        return layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
+    # if gpu:
+    #     return layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
     return layers.GRU(hidden, return_sequences=True, return_state=returnState, name=lName)
