@@ -71,14 +71,7 @@ def trainModel(params):
                            validation_data=gen_valid,
                            epochs=params.maxEpochs,
                            verbose=1,
-                           workers=8,
-                           use_multiprocessing=True,
+                           # workers=8,
+                           # use_multiprocessing=True,
                            callbacks=callbacks
                            )
-    # return m.fit(x = params.trainData.X, y = params.trainData.y,
-    #                             validation_data=(params.validationData.X, params.validationData.y),
-    #                             batch_size= params.minibatches,
-    #                             epochs=params.maxEpochs,
-    #                             verbose=1,
-    #                             callbacks=callbacks
-    #                             )
