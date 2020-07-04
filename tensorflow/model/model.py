@@ -2,6 +2,7 @@ from tensorflow.keras import layers
 
 import layers.attention as la
 import layers.lateFusion as llf
+import tensorflow as tf
 from tensorflow import keras
 
 
@@ -46,6 +47,6 @@ def load(file):
 
 
 def __createGRULayer(hidden, gpu, returnState, lName):
-    # if gpu:
-    #     return layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
+    if gpu:
+         return tf.compat.v1.keras.layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
     return layers.GRU(hidden, return_sequences=True, return_state=returnState, name=lName)
