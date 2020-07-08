@@ -53,7 +53,7 @@ def trainModel(params):
 
         checkpoint = ModelCheckpoint(filepath=params.modelFile,
                                      monitor='loss',
-                                     verbose=2,
+                                     verbose=1,
                                      save_best_only=False,
                                      mode='min',
                                      save_freq=int(params.trainSize / params.batchSize))
@@ -65,7 +65,7 @@ def trainModel(params):
         return m.fit(x=params.trainData,
                      validation_data=params.validationData,
                      epochs=params.maxEpochs,
-                     verbose=2,
+                     verbose=1,
                      callbacks=callbacks,
                      steps_per_epoch=int(params.trainSize / params.batchSize),
                      validation_steps=int(params.validationSize / params.batchSize))
