@@ -3,12 +3,17 @@ MAIN_DIR=${CURDIR}/../..
 ifeq ($(GPU), 1)
     GPU_SETTING=--use-gpu
 endif
+ifeq ($(PREFETCH_ON),)
+else
+    PREFETCH_SETTING=--prefetch-device $(PREFETCH_ON)
+endif
 #################################################################################################
 info:
-	@echo "Input	: $(INPUT_DIR)"
-	@echo "GPU		: $(GPU)"
-	@echo "Hidden	: $(HIDDEN)"
-	@echo "Word vec	: $(WORD_VEC_SIZE)"
+	@echo "Input		: $(INPUT_DIR)"
+	@echo "GP			: $(GPU)"
+	@echo "Hidden		: $(HIDDEN)"
+	@echo "Word vec		: $(WORD_VEC_SIZE)"
+	@echo "Prefetch on	: $(PREFETCH_SETTINGs)"
 #################################################################################################
 $(WORK_DIR)/data:
 	mkdir -p $@
@@ -27,7 +32,8 @@ $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
 
 $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
 	python $(SCRIPT_DIR)/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model \
-		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN) $(GPU_SETTING)
+		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN) $(GPU_SETTING) \
+		--shuffle $(SHUFFLE) --prefetch $(PREFETCH) $(PREFETCH_SETTING)
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
