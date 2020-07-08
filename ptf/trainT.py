@@ -9,8 +9,8 @@ import tensorflow as tf
 ####################################################################################
 Params = namedtuple('Params', ('vocab', 'trainData', 'validationData', 'hidden', 'wordVecSize',
                                'batchSize', 'modelFile', 'maxEpochs', 'gpu', 'callback', 'optimizer',
-                               'features', 'trainSize', 'validationSize'),
-                    defaults=(None, None, None, 100, 100, 128, None, 10, False, None, 'adam', None, 0, 0))
+                               'features', 'trainSize', 'validationSize', 'strategy'),
+                    defaults=(None, None, None, 100, 100, 128, None, 10, False, None, 'adam', None, 0, 0, None))
 
 
 ####################################################################################
@@ -22,6 +22,7 @@ def trainModel(params):
     assert params.trainData, "No trainData"
     assert params.validationData, "No validationData"
     assert params.modelFile, "No modelFile provided"
+    assert params.strategy, "No strategy"
 
     if params.features is None:
         print("Vocab size     :", len(params.vocab))
@@ -37,10 +38,7 @@ def trainModel(params):
     print("Train Data     :", params.trainSize)
     print("Validation Data:", params.validationSize)
 
-    strategy = tf.distribute.MirroredStrategy()
-    print('Number of devices: {}'.format(strategy.num_replicas_in_sync), file=sys.stderr)
-
-    with strategy.scope():
+    with params.strategy.scope():
         m = model.init(vocabularySize=v_size,
                        punctuationSize=len(data.PUNCTUATION_VOCABULARY),
                        hidden=params.hidden,
@@ -55,7 +53,7 @@ def trainModel(params):
 
         checkpoint = ModelCheckpoint(filepath=params.modelFile,
                                      monitor='loss',
-                                     verbose=1,
+                                     verbose=2,
                                      save_best_only=False,
                                      mode='min',
                                      save_freq=int(params.trainSize / params.batchSize))
@@ -67,7 +65,7 @@ def trainModel(params):
         return m.fit(x=params.trainData,
                      validation_data=params.validationData,
                      epochs=params.maxEpochs,
-                     verbose=1,
+                     verbose=2,
                      callbacks=callbacks,
                      steps_per_epoch=int(params.trainSize / params.batchSize),
                      validation_steps=int(params.validationSize / params.batchSize))
