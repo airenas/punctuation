@@ -1,9 +1,9 @@
+import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 
 import layers.attention as la
 import layers.lateFusion as llf
-import tensorflow as tf
-from tensorflow import keras
 
 
 def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100, hidden=100, gpu=False,
@@ -15,7 +15,8 @@ def init(vocabularySize=1, punctuationSize=1, timesteps=50, word_vector_size=100
                                     name='word_vec')(word_ids)
     else:
         word_ids = keras.Input(shape=(timesteps, vocabularySize,), dtype='float32', name='feat_ids')
-        word_vec = layers.Dense(word_vector_size, input_dim=vocabularySize, name='feat_matrix', use_bias=True)(word_ids)
+        word_vec = layers.Dense(word_vector_size, input_dim=vocabularySize, name='feat_matrix', use_bias=True,
+                                activation=tf.nn.tanh)(word_ids)
     # encoder layer
     gru_input, f_state, b_state = layers.Bidirectional(
         __createGRULayer(hidden, gpu, True, 'gru_input'))(word_vec)
@@ -48,5 +49,5 @@ def load(file):
 
 def __createGRULayer(hidden, gpu, returnState, lName):
     if gpu:
-         return tf.compat.v1.keras.layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
+        return tf.compat.v1.keras.layers.CuDNNGRU(hidden, return_sequences=True, return_state=returnState, name=lName)
     return layers.GRU(hidden, return_sequences=True, return_state=returnState, name=lName)
