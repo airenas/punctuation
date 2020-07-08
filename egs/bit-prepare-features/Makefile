@@ -45,13 +45,13 @@ $(WORK_DIR)/config/data_weights.txt: | $(WORK_DIR)/config
 	echo train 1 1.0 > $(WORK_DIR)/config/data_weights.txt
 
 $(WORK_DIR)/text/train.txt: $(F_DIR)/lt.train.txt | $(WORK_DIR)/text
-	pv $^ | python ../../tensorflow/data/clean-punct.py > $@
+	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py > $@
 
 $(WORK_DIR)/text/train.counts: $(WORK_DIR)/text/train.txt
-	pv $^ | python ../../tensorflow/data/text-to-counts.py > $@
+	pv $^ | python $(SCRIPT_DIR)/data/text-to-counts.py > $@
 
 $(WORK_DIR)/config/words.txt: $(WORK_DIR)/text/train.txt | $(WORK_DIR)/config
-	pv $^ | python ../../tensorflow/data/text-to-vocab.py --add-eps '<eps>' --add-unk '<UNK>' > $@
+	pv $^ | python $(SCRIPT_DIR)/data/text-to-vocab.py --add-eps '<eps>' --add-unk '<UNK>' > $@
 	$(eval n=`cat $@ | wc -l`)
 	echo "<brk> $(n)" >> $@
 	$(eval n=`cat $@ | wc -l`)

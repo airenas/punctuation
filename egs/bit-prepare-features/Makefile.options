@@ -1,5 +1,6 @@
 -include Makefile.options.local
 
+SCRIPT_DIR=../../ptf/
 KALDI_ROOT?=../../../kaldi
 TOOLS_ROOT?=../../tools
 INPUT_FILE?=../../text/BIT_merged_unique.txt
