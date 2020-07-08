@@ -1,5 +1,6 @@
 -include Makefile.options.local
 
+SCRIPT_DIR=../../ptf/
 INPUT_DIR?=../bit-prepare-fetures/data
 WORK_DIR?=data
 MODEL_PREFIX?=m1
