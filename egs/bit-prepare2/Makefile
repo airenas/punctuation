@@ -17,7 +17,8 @@ $(WORK_DIR)/text.input: | $(WORK_DIR)
 	pv $(INPUT_FILE) | head -n $(SENTENCES) > $@
 $(WORK_DIR)/text.a6: $(WORK_DIR)/text.input
 	pv $^ | python local/fix_spaces.py | python local/fix_sym.py | python local/change_num.py | \
-		python local/change_punct.py | python local/join_colon_sentence.py | python local/drop_period_sentence.py > $@
+		python local/change_punct.py | python local/join_colon_sentence.py | python local/drop_period_sentence.py | \
+		python local/add_period.py> $@
 
 $(WORK_DIR)/text.counts: $(WORK_DIR)/text.a6
 	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py | \
