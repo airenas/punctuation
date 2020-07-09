@@ -16,30 +16,47 @@ $(F_DIR):
 $(WORK_DIR)/text.input: | $(WORK_DIR)
 	pv $(INPUT_FILE) | head -n $(SENTENCES) > $@
 $(WORK_DIR)/text.a1: $(WORK_DIR)/text.input
-	pv $^ | python local/fix-spaces.py > $@
+	pv $^ | python local/fix_spaces.py > $@
 $(WORK_DIR)/text.a2: $(WORK_DIR)/text.a1
-	pv $^ | python local/fix-sym.py > $@
+	pv $^ | python local/fix_sym.py > $@
 $(WORK_DIR)/text.a3: $(WORK_DIR)/text.a2
-	pv $^ | python local/change-num.py > $@
+	pv $^ | python local/change_num.py > $@
 $(WORK_DIR)/text.a4: $(WORK_DIR)/text.a3
-	pv $^ | python local/change-punct.py > $@
+	pv $^ | python local/change_punct.py > $@
 $(WORK_DIR)/text.a5: $(WORK_DIR)/text.a4
 	pv $^ | python local/join_colon_sentence.py > $@
 $(WORK_DIR)/text.a6: $(WORK_DIR)/text.a5
 	pv $^ | python local/drop_period_sentence.py > $@
 
-$(F_DIR)/lt.train.txt: $(WORK_DIR)/text.a5 | $(F_DIR)
-	all=$$(wc -l $^ | awk '{print $$1;}'); \
-	train=$$(($$all * 8 / 10)); \
-	dev2=$$(($$all * 2 / 10 )); \
-	dev1=$$(($$all * 1 / 10 )); \
-	echo "$$all $$train $$dev2 $$dev1"; \
-	head -n $$train $^ > $@; \
-	tail -n $$dev2 $^ | head -n $$dev1 > $(F_DIR)/lt.dev.txt; \
-	tail -n $$dev1 $^ > $(F_DIR)/lt.test.txt
+$(WORK_DIR)/text.np.txt: $(WORK_DIR)/text.a6
+	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py > $@
+
+$(WORK_DIR)/text.counts: $(WORK_DIR)/text.np.txt
+	pv $^ | python $(SCRIPT_DIR)/data/text-to-counts.py | sort -r -n -k 2 > $@
+
+$(WORK_DIR)/vocab.txt: $(WORK_DIR)/text.counts
+	pv $^ | python $(SCRIPT_DIR)/data/counts_to_vocab.py --n $(VOCAB) --drop_unk --leave '<NUM>' --leave '<unk>' > $@
+	echo '</S>' >> $@
+
+$(WORK_DIR)/text.a7: $(WORK_DIR)/text.a6 $(WORK_DIR)/vocab.txt
+	pv $(WORK_DIR)/text.a6 | python local/drop_unk_sentence.py --vocab $(WORK_DIR)/vocab.txt > $@
+
+$(F_DIR)/lt.train.txt: $(WORK_DIR)/text.a7 | $(F_DIR)
+# hold out one in every 20 lines as dev data and as evaluation data.
+# use 5 % for dev and 5% for test
+	pv $^ | awk \
+		'{if(NR%20 == 0) { print >"$(F_DIR)/lt.dev.txt"; } \
+		else {if(NR%20 == 1) { print >"$(F_DIR)/lt.test.txt"; } \
+		else {print;}}}' > $@
+$(F_DIR)/vocab.txt: $(WORK_DIR)/vocab.txt | $(F_DIR)
+	cp $^ $@
 #################################################################################################
-dev: $(WORK_DIR)/text.a6
-build: info $(F_DIR)/lt.train.txt
+dev: $(WORK_DIR)/text.a7
+build: info $(F_DIR)/lt.train.txt $(F_DIR)/vocab.txt
+#################################################################################################
+put-data:
+	$(SSH_CMD) "mkdir -p $(REMOTE_DIR)"
+	$(PUT_CMD) $(F_DIR)/*.txt $(PUT_DIR)/final/
 #################################################################################################
 clean:
 	rm -rf $(WORK_DIR)
