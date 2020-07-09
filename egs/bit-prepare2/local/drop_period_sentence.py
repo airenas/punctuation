@@ -21,7 +21,7 @@ def process(f_in, f_out):
         if line_ok(line):
             print(line, file=f_out)
         else:
-            print(line, file=sys.stderr)
+            # print(line, file=sys.stderr)
             dc += 1
     return lc, dc
 

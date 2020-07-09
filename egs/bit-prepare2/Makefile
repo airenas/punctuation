@@ -15,24 +15,13 @@ $(F_DIR):
 #################################################################################################
 $(WORK_DIR)/text.input: | $(WORK_DIR)
 	pv $(INPUT_FILE) | head -n $(SENTENCES) > $@
-$(WORK_DIR)/text.a1: $(WORK_DIR)/text.input
-	pv $^ | python local/fix_spaces.py > $@
-$(WORK_DIR)/text.a2: $(WORK_DIR)/text.a1
-	pv $^ | python local/fix_sym.py > $@
-$(WORK_DIR)/text.a3: $(WORK_DIR)/text.a2
-	pv $^ | python local/change_num.py > $@
-$(WORK_DIR)/text.a4: $(WORK_DIR)/text.a3
-	pv $^ | python local/change_punct.py > $@
-$(WORK_DIR)/text.a5: $(WORK_DIR)/text.a4
-	pv $^ | python local/join_colon_sentence.py > $@
-$(WORK_DIR)/text.a6: $(WORK_DIR)/text.a5
-	pv $^ | python local/drop_period_sentence.py > $@
+$(WORK_DIR)/text.a6: $(WORK_DIR)/text.input
+	pv $^ | python local/fix_spaces.py | python local/fix_sym.py | python local/change_num.py | \
+		python local/change_punct.py | python local/join_colon_sentence.py | python local/drop_period_sentence.py > $@
 
-$(WORK_DIR)/text.np.txt: $(WORK_DIR)/text.a6
-	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py > $@
-
-$(WORK_DIR)/text.counts: $(WORK_DIR)/text.np.txt
-	pv $^ | python $(SCRIPT_DIR)/data/text-to-counts.py | sort -r -n -k 2 > $@
+$(WORK_DIR)/text.counts: $(WORK_DIR)/text.a6
+	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py | \
+		python $(SCRIPT_DIR)/data/text-to-counts.py | sort -r -n -k 2 > $@
 
 $(WORK_DIR)/vocab.txt: $(WORK_DIR)/text.counts
 	pv $^ | python $(SCRIPT_DIR)/data/counts_to_vocab.py --n $(VOCAB) --drop_unk --leave '<NUM>' --leave '<unk>' > $@

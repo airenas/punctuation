@@ -33,7 +33,7 @@ def main(argv):
         if ok:
             print(line)
         else:
-            print(line, file=sys.stderr)
+            # print(line, file=sys.stderr)
             sc += 1
     print("Wrote %d lines, %d skipped." % (lc, sc), file=sys.stderr)
     print("Done", file=sys.stderr)
