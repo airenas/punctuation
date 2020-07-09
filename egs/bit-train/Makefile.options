@@ -1,6 +1,14 @@
 -include Makefile.options.local
 
-INPUT_DIR?=../bit-prepare/data/final
+SCRIPT_DIR=../../ptf
+INPUT_DIR?=../bit-prepare2/data
 WORK_DIR?=data
 MODEL_PREFIX?=m1
-MODEL_TEST?=03
+MODEL_TEST?=05
+WORD_VEC_SIZE?=512
+HIDDEN?=256
+GPU?=0
+SHUFFLE?=100
+PREFETCH?=10
+PREFETCH_ON?=
+BATCH_SIZE?=128

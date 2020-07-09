@@ -2,10 +2,9 @@ import os
 from collections import namedtuple
 
 import numpy as np
-from tqdm import tqdm
-
-import tensorflow.keras as keras
 import tensorflow as tf
+import tensorflow.keras as keras
+from tqdm import tqdm
 
 ####################################################################################
 PUNCTUATION_VOCABULARY = ["_SPACE", ",COMMA", ".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK", ":COLON", ";SEMICOLON",
@@ -107,4 +106,14 @@ def parse_line(t: tf.Tensor, feat, punct_vocab_size: int):
     X = np.zeros(feat.len() * len(ld[0]), dtype=np.float32).reshape((len(ld[0]), feat.len()))
     for wi in range(len(ld[0])):
         feat.setWordFeaturesTo(ld[0][wi], X[wi])
+    return X, y
+
+
+def parse_simple_line(t: tf.Tensor, punct_vocab_size: int):
+    s = t.numpy()
+    ld = eval(s)
+    y = keras.utils.to_categorical(ld[1], num_classes=punct_vocab_size)
+
+    X = np.array(ld[0])
+    # print("shapes x, y", X.shape, y.shape)
     return X, y

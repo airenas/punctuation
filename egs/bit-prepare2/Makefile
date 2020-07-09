@@ -24,8 +24,9 @@ $(WORK_DIR)/text.counts: $(WORK_DIR)/text.a6
 		python $(SCRIPT_DIR)/data/text-to-counts.py | sort -r -n -k 2 > $@
 
 $(WORK_DIR)/vocab.txt: $(WORK_DIR)/text.counts
-	pv $^ | python $(SCRIPT_DIR)/data/counts_to_vocab.py --n $(VOCAB) --drop_unk --leave '<NUM>' --leave '<unk>' > $@
+	echo '<UNK>' > $@
 	echo '</S>' >> $@
+	pv $^ | python $(SCRIPT_DIR)/data/counts_to_vocab.py --n $(VOCAB) --drop_unk --leave '<NUM>' >> $@
 
 $(WORK_DIR)/text.a7: $(WORK_DIR)/text.a6 $(WORK_DIR)/vocab.txt
 	pv $(WORK_DIR)/text.a6 | python local/drop_unk_sentence.py --vocab $(WORK_DIR)/vocab.txt > $@
