@@ -24,7 +24,7 @@ def prepare_train_params(args):
 
     train_file = args.data_dir + "/train"
     print("Setting train data from: ", train_file, file=sys.stderr)
-    train_ds = tf.data.TextLineDataset([train_file])
+    train_ds = tf.data.TextLineDataset([train_file]).repeat()
     train_ds = train_ds.map(lambda x: tf.py_function(func=parse_line_int, inp=[x], Tout=[tf.float32, tf.float32]),
                             num_parallel_calls=20)
     train_ds = train_ds.shuffle(args.shuffle)
