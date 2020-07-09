@@ -38,10 +38,10 @@ $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done | $(WORK_DIR)/predict
-	python $(SCRIPT_DIR)/predict.py $(INPUT_DIR)/lt.test.txt $(WORK_DIR)/data/vocabulary $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
+	python $(SCRIPT_DIR)/predict.py $(INPUT_DIR)/final/lt.test.txt $(WORK_DIR)/data/vocabulary $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
 		$(WORK_DIR)/predict/test.txt
 $(WORK_DIR)/score.txt: $(WORK_DIR)/predict/test.txt | $(WORK_DIR)/predict
-	python $(SCRIPT_DIR)/punctuator2/error_calculator.py $(INPUT_DIR)/lt.test.txt $(WORK_DIR)/predict/test.txt > $@
+	python $(SCRIPT_DIR)/punctuator2/error_calculator.py $(INPUT_DIR)/final/lt.test.txt $(WORK_DIR)/predict/test.txt > $@
 #################################################################################################
 to-tf-format: $(WORK_DIR)/model/.done
 	rm -rf $(WORK_DIR)/tf
