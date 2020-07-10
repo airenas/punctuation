@@ -31,10 +31,11 @@ $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
 	touch $@
 
 $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
+	rm -rf $(WORK_DIR)/tb
 	python $(SCRIPT_DIR)/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model \
 		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN) $(GPU_SETTING) \
 		--shuffle $(SHUFFLE) --prefetch $(PREFETCH) $(PREFETCH_SETTING) \
-		--batch-size $(BATCH_SIZE)
+		--batch-size $(BATCH_SIZE) --tensorboard-dir $(WORK_DIR)/tb
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
@@ -52,6 +53,9 @@ prepare-data: info $(WORK_DIR)/data/.done
 build: info $(WORK_DIR)/model/.done
 predict: $(WORK_DIR)/score.txt
 	cat $^
+#################################################################################################
+tensorboard:
+	tensorboard --logdir $(WORK_DIR)/tb
 #################################################################################################
 clean:
 	rm -rf $(WORK_DIR)

@@ -9,8 +9,8 @@ import tensorflow as tf
 ####################################################################################
 Params = namedtuple('Params', ('vocab', 'trainData', 'validationData', 'hidden', 'wordVecSize',
                                'batchSize', 'modelFile', 'maxEpochs', 'gpu', 'callback', 'optimizer',
-                               'features', 'trainSize', 'validationSize', 'strategy'),
-                    defaults=(None, None, None, 100, 100, 128, None, 10, False, None, 'adam', None, 0, 0, None))
+                               'features', 'trainSize', 'validationSize', 'strategy', 'tensorboardDir'),
+                    defaults=(None, None, None, 100, 100, 128, None, 10, False, None, 'adam', None, 0, 0, None, None))
 
 
 ####################################################################################
@@ -59,6 +59,9 @@ def trainModel(params):
                                      save_freq=int(params.trainSize / params.batchSize))
         es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
         callbacks = [checkpoint, es]
+        if params.tensorboardDir is not None:
+            tb = tf.keras.callbacks.TensorBoard(log_dir=params.tensorboardDir, histogram_freq=1, profile_batch='10,20')
+            callbacks.append(tb)
         if params.callback is not None:
             callbacks.insert(0, params.callback)
 

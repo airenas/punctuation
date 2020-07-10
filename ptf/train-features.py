@@ -60,7 +60,8 @@ def prepare_train_params(args):
         validationSize=data.get_size(args.data_dir + "/dev.counts"),
         trainData=train_ds,
         validationData=dev_ds,
-        strategy=strategy
+        strategy=strategy,
+        tensorboardDir=args.tensorboard_dir
     )
     return params
 
@@ -80,6 +81,7 @@ def take_cmd_params(argv):
     parser.add_argument("--prefetch-device", default='', type=str, help="Prefetch device")
     parser.add_argument("--word-vec-size", default='1024', type=int, help="Word vector size")
     parser.add_argument("--use-gpu", action='store_true', help="Use GPU for training")
+    parser.add_argument("--tensorboard-dir", default='', type=str, help="Tensorboard logs directory", required=False)
     args = parser.parse_args(args=argv)
     return args
 
