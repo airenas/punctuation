@@ -1,7 +1,8 @@
-import tensorflow as tf
-from tensorflow import keras
-import model.model as model
 import sys
+
+import tensorflow as tf
+
+import model.model as model
 
 if len(sys.argv) > 1:
     in_file = sys.argv[1]
@@ -18,13 +19,12 @@ m = model.load(in_file)
 m.summary(150)
 
 print('Saving tf')
-inputsd = {"in": m.input }
-outputsd = {"out": m.output }
+inputsd = {"in": m.input}
+outputsd = {"out": m.output}
 print('================ THESE ARE IMPORTANT:===================')
-print('Input name  :', m.input.name )
-print('Output name :', m.output.name )
+print('Input name  :', m.input.name)
+print('Output name :', m.output.name)
 print('========================================================')
-
-keras.experimental.export_saved_model(m, out_dir)
+m.save(out_dir, overwrite=True, include_optimizer=True, save_format='tf')
 print('==============DONE =====================================')
 print('========================================================')
