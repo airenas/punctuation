@@ -27,7 +27,7 @@ def main(argv):
                                      epilog="E.g. cat input.txt | " + sys.argv[0] + " > result.txt",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--vocab", type=str, help="Vocabulary")
-    parser.add_argument("--change_unk", action='store_true', help="Change words like '<xxx>' to <UNK>")
+    parser.add_argument("--change-unk", action='store_true', help="Change words like '<xxx>' to <UNK>")
     args = parser.parse_args(args=argv)
 
     print("Starting", file=sys.stderr)
