@@ -81,7 +81,7 @@ def take_cmd_params(argv):
     parser.add_argument("--prefetch-device", default='', type=str, help="Prefetch device")
     parser.add_argument("--word-vec-size", default='1024', type=int, help="Word vector size")
     parser.add_argument("--use-gpu", action='store_true', help="Use GPU for training")
-    parser.add_argument("--tensorboard-dir", default='', type=str, help="Tensorboard logs directory", required=False)
+    parser.add_argument("--tensorboard-dir", type=str, help="Tensorboard logs directory", required=False)
     args = parser.parse_args(args=argv)
     return args
 
