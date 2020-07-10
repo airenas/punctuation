@@ -13,6 +13,8 @@ $(WORK_DIR)/config:
 	mkdir -p $@
 $(WORK_DIR)/text:
 	mkdir -p $@
+$(WORK_DIR)/final:
+	mkdir -p $@
 #################################################################################################
 $(WORK_DIR)/config/oov.txt: | $(WORK_DIR)/config
 	echo "<UNK>" > $(WORK_DIR)/config/oov.txt
@@ -52,9 +54,16 @@ $(WORK_DIR)/config/features.txt: $(WORK_DIR)/config/unigram_probs.txt
 $(WORK_DIR)/config/word_feats.txt: $(WORK_DIR)/config/features.txt
 	python $(KALDI_ROOT)/scripts/rnnlm/get_word_features.py --unigram-probs=$(WORK_DIR)/config/unigram_probs.txt \
 		$(WORK_DIR)/config/words.txt $(WORK_DIR)/config/features.txt > $@
+
+$(WORK_DIR)/final/.done: $(WORK_DIR)/final
+	ln -s $(INPUT_DIR)/lt.train.txt $(WORK_DIR)/final/lt.train.txt
+	ln -s $(INPUT_DIR)/lt.test.txt $(WORK_DIR)/final/lt.test.txt
+	ln -s $(INPUT_DIR)/lt.dev.txt $(WORK_DIR)/final/lt.dev.txt
+	touch $@
+
 #################################################################################################
 dev: $(WORK_DIR)/text/train.counts
-build: info $(WORK_DIR)/config/word_feats.txt
+build: info $(WORK_DIR)/config/word_feats.txt $(WORK_DIR)/final/.done
 #################################################################################################
 put-data:
 	$(SSH_CMD) "mkdir -p $(REMOTE_DIR)"
