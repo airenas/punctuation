@@ -3,40 +3,16 @@ PATH:=$(TOOLS_ROOT)/bin:$(PATH)
 F_DIR=$(WORK_DIR)/final
 #################################################################################################
 info:
-	@echo "Input:     $(INPUT_FILE)"
-	@echo "Sentences: $(SENTENCES)"
-	@echo "Top words: $(TOP_WORDS)"
+	@echo "Input dir : $(INPUT_DIR)"
+	@echo "Top words : $(TOP_WORDS)"
+	@echo "Work Dir	 : $(WORK_DIR)"
 #################################################################################################
 $(WORK_DIR):
-	mkdir -p $@
-$(F_DIR):
 	mkdir -p $@
 $(WORK_DIR)/config:
 	mkdir -p $@
 $(WORK_DIR)/text:
 	mkdir -p $@
-#################################################################################################
-$(WORK_DIR)/text.input: | $(WORK_DIR)
-	pv $(INPUT_FILE) | head -n $(SENTENCES) > $@
-$(WORK_DIR)/text.a1: $(WORK_DIR)/text.input
-	pv $^ | drop.file | clear.symbols | change.numbers > $@
-$(WORK_DIR)/text.a2: $(WORK_DIR)/text.a1
-	pv $^ | to.sentences > $@
-$(WORK_DIR)/text.a3: $(WORK_DIR)/text.a2
-	pv $^ | drop.sentences > $@
-$(WORK_DIR)/text.a4: $(WORK_DIR)/text.a3
-	pv $^ | lc.sentences > $@
-$(WORK_DIR)/text.a5: $(WORK_DIR)/text.a4
-	pv $^ | make.data > $@
-$(F_DIR)/lt.train.txt: $(WORK_DIR)/text.a5 | $(F_DIR)
-	all=$$(wc -l $^ | awk '{print $$1;}'); \
-	train=$$(($$all * 8 / 10)); \
-	dev2=$$(($$all * 2 / 10 )); \
-	dev1=$$(($$all * 1 / 10 )); \
-	echo "$$all $$train $$dev2 $$dev1"; \
-	head -n $$train $^ > $@; \
-	tail -n $$dev2 $^ | head -n $$dev1 > $(F_DIR)/lt.dev.txt; \
-	tail -n $$dev1 $^ > $(F_DIR)/lt.test.txt
 #################################################################################################
 $(WORK_DIR)/config/oov.txt: | $(WORK_DIR)/config
 	echo "<UNK>" > $(WORK_DIR)/config/oov.txt
@@ -44,8 +20,8 @@ $(WORK_DIR)/config/oov.txt: | $(WORK_DIR)/config
 $(WORK_DIR)/config/data_weights.txt: | $(WORK_DIR)/config
 	echo train 1 1.0 > $(WORK_DIR)/config/data_weights.txt
 
-$(WORK_DIR)/text/train.txt: $(F_DIR)/lt.train.txt | $(WORK_DIR)/text
-	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py > $@
+$(WORK_DIR)/text/train.txt: $(INPUT_DIR)/lt.train.txt | $(WORK_DIR)/text
+	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py | python local/change_unk.py > $@
 
 $(WORK_DIR)/text/train.counts: $(WORK_DIR)/text/train.txt
 	pv $^ | python $(SCRIPT_DIR)/data/text-to-counts.py > $@
@@ -76,12 +52,13 @@ $(WORK_DIR)/config/features.txt: $(WORK_DIR)/config/unigram_probs.txt
 $(WORK_DIR)/config/word_feats.txt: $(WORK_DIR)/config/features.txt
 	python $(KALDI_ROOT)/scripts/rnnlm/get_word_features.py --unigram-probs=$(WORK_DIR)/config/unigram_probs.txt \
 		$(WORK_DIR)/config/words.txt $(WORK_DIR)/config/features.txt > $@
-
+#################################################################################################
+dev: $(WORK_DIR)/text/train.counts
 build: info $(WORK_DIR)/config/word_feats.txt
 #################################################################################################
 put-data:
 	$(SSH_CMD) "mkdir -p $(REMOTE_DIR)"
-	$(PUT_CMD) $(F_DIR)/*.txt $(PUT_DIR)/final/
+	$(PUT_CMD) $(INPUT_DIR)/*.txt $(PUT_DIR)/final/
 	$(PUT_CMD) $(WORK_DIR)/config/features.txt $(PUT_DIR)/config/
 #################################################################################################
 clean:

@@ -3,9 +3,8 @@
 SCRIPT_DIR=../../ptf/
 KALDI_ROOT?=../../../kaldi
 TOOLS_ROOT?=../../tools
-INPUT_FILE?=../../text/BIT_merged_unique.txt
+INPUT_DIR?=../bit-prepare2/final
 WORK_DIR?=data
-SENTENCES?=10000000000 # take all
 TOP_WORDS?=5000
 PUT_DIR=$(USER_SERVER):$(REMOTE_DIR)
 maxJobs=4
