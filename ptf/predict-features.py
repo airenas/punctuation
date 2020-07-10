@@ -25,10 +25,10 @@ def convert_punctuation_to_readable(punct_token):
         return punct_token[0]
 
 
-def convert(words, features):
+def convert(words, features, word_function):
     res = np.zeros(features.len() * len(words), dtype=np.float32).reshape((len(words), features.len()))
     for i in range(len(words)):
-        features.setWordFeaturesTo(words[i], res[i])
+        features.setWordFeaturesTo(word_function(words[i]), res[i])
     return res
 
 
@@ -40,7 +40,7 @@ def change_unk(w):
     return "<UNK>"
 
 
-def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_function):
+def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_function, word_function):
     i = 0
     with tqdm(total=len(text), desc="Punctuating", file=sys.stderr) as pbar:
         while True:
@@ -50,7 +50,7 @@ def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_funct
             if len(subsequence) < MAX_SUBSEQUENCE_LEN:
                 subsequence = subsequence + ([data.END] * (MAX_SUBSEQUENCE_LEN - len(subsequence)))
 
-            converted_subsequence = convert(subsequence, features)
+            converted_subsequence = convert(subsequence, features, word_function)
             shape = converted_subsequence.shape
             a = np.array(converted_subsequence).reshape((1, shape[0], shape[1]))
 
@@ -102,13 +102,14 @@ def predict(args):
     if len(input_text) == 0:
         sys.exit("Input text missing.")
     text = [w for w in input_text.split() if w not in punctuation_vocabulary] + [data.END]
+    w_func = lambda x: x
     if args.change_unk:
         print("Change unk's", file=sys.stderr)
-        text = [change_unk(w) for w in text]
-    predict = lambda x: m.predict(x, verbose=0)
+        w_func = lambda x: change_unk(x)
+    predict_func = lambda x: m.predict(x, verbose=0)
     f_out = open(args.out, 'w', encoding='utf-8')
     print("Restoring punctuation", file=sys.stderr)
-    restore(f_out, text, feat, reverse_punctuation_vocabulary, predict)
+    restore(f_out, text, feat, reverse_punctuation_vocabulary, predict_func, w_func)
 
 
 def take_cmd_params(argv):
