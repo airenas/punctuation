@@ -4,6 +4,18 @@ import sys
 import data
 
 
+def _change_unk(w):
+    if not (w.startswith("<") and w.endswith(">")):
+        return w
+    if w == '<NUM>' or w == data.END:
+        return w
+    return "<UNK>"
+
+
+def change_unk(words):
+    return [_change_unk(w) for w in words]
+
+
 def map_vocab(words, vocab):
     unk_id = vocab[data.UNK]
     return [vocab.get(w, unk_id) for w in words]
@@ -15,6 +27,7 @@ def main(argv):
                                      epilog="E.g. cat input.txt | " + sys.argv[0] + " > result.txt",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--vocab", type=str, help="Vocabulary")
+    parser.add_argument("--change_unk", action='store_true', help="Change words like '<xxx>' to <UNK>")
     args = parser.parse_args(args=argv)
 
     print("Starting", file=sys.stderr)
@@ -78,6 +91,8 @@ def main(argv):
                     ids = tw
                     if vocab is not None:
                         ids = map_vocab(tw, vocab)
+                    if args.change_unk:
+                        ids = change_unk(tw)
                     subsequence = [ids, current_punctuations]
                     print("%s" % repr(subsequence))
                     # Carry unfinished sentence to next subsequence

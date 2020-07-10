@@ -23,8 +23,8 @@ $(WORK_DIR)/predict:
 	mkdir -p $@
 #################################################################################################
 $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
-	pv $(INPUT_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text-to-train.py > $(WORK_DIR)/data/train
-	pv $(INPUT_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text-to-train.py > $(WORK_DIR)/data/dev
+	pv $(INPUT_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text_to_train.py --change_unk > $(WORK_DIR)/data/train
+	pv $(INPUT_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text_to_train.py --change_unk > $(WORK_DIR)/data/dev
 	cp $(INPUT_DIR)/config/features.txt $(WORK_DIR)/data
 	wc -l $(WORK_DIR)/data/train | awk '{print $$1}' > $(WORK_DIR)/data/train.counts
 	wc -l $(WORK_DIR)/data/dev | awk '{print $$1}' > $(WORK_DIR)/data/dev.counts
