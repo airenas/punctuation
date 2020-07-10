@@ -35,7 +35,7 @@ $(OUT_DIR)/models/punctuation/$(VERSION): | $(OUT_DIR)/models
 
 $(WORK_DIR)/$(OUT_FILE): $(OUT_DIR)/$(VERSION).0/settings.yml $(OUT_DIR)/$(VERSION).0/vocabulary \
 	$(OUT_DIR)/models/punctuation/$(VERSION)
-	cd $(WORK_DIR) && tar -czvf $@ punctuation
+	cd $(WORK_DIR) && tar -czvf $(OUT_FILE) punctuation
 #################################################################################################
 dev: info $(WORK_DIR)/models/punctuation
 build: info $(WORK_DIR)/$(OUT_FILE)
