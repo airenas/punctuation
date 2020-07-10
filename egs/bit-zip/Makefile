@@ -29,16 +29,15 @@ $(OUT_DIR)/$(VERSION).0/settings.yml: $(OUT_DIR)/$(VERSION).0/vocabulary | $(OUT
 	echo "model: punctuation" >> $@
 	echo "version: $(VERSION)" >> $@
 
-$(OUT_DIR)/models/punctuation: | $(OUT_DIR)/models
+$(OUT_DIR)/models/punctuation/$(VERSION): | $(OUT_DIR)/models
 	rm -rf $@
 	python $(SCRIPT_DIR)/saveAsTF.py $(INPUT_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 $@
 
 $(WORK_DIR)/$(OUT_FILE): $(OUT_DIR)/$(VERSION).0/settings.yml $(OUT_DIR)/$(VERSION).0/vocabulary \
-	$(OUT_DIR)/models/punctuation
+	$(OUT_DIR)/models/punctuation/$(VERSION)
 	cd $(WORK_DIR) && tar -czvf $@ punctuation
 #################################################################################################
-dev: info $(WORK_DIR)/punctuation/$(VERSION).0/settings.yml \
-	$(WORK_DIR)/punctuation/$(VERSION).0/vocabulary
+dev: info $(WORK_DIR)/models/punctuation
 build: info $(WORK_DIR)/$(OUT_FILE)
 #################################################################################################
 clean:
