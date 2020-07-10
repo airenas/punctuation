@@ -1,11 +1,14 @@
 -include Makefile.options
 MAIN_DIR=${CURDIR}/../..
-ifeq ($(GPU), 1)
+ifeq ($(GPU),1)
     GPU_SETTING=--use-gpu
 endif
 ifeq ($(PREFETCH_ON),)
 else
     PREFETCH_SETTING=--prefetch-device $(PREFETCH_ON)
+endif
+ifeq ($(PROFILE),1)
+    TENSORBOARD_SETTING=--tensorboard-dir $(WORK_DIR)/tb
 endif
 #################################################################################################
 info:
@@ -35,7 +38,7 @@ $(WORK_DIR)/model/.done: $(WORK_DIR)/data/.done | $(WORK_DIR)/model
 	python $(SCRIPT_DIR)/train-features.py --data-dir $(WORK_DIR)/data --model-dir $(WORK_DIR)/model \
 		--word-vec-size=$(WORD_VEC_SIZE) --hidden=$(HIDDEN) $(GPU_SETTING) \
 		--shuffle $(SHUFFLE) --prefetch $(PREFETCH) $(PREFETCH_SETTING) \
-		--batch-size $(BATCH_SIZE) --tensorboard-dir $(WORK_DIR)/tb
+		--batch-size $(BATCH_SIZE) $(TENSORBOARD_SETTING)
 	touch $@
 
 $(WORK_DIR)/predict/test.txt: $(WORK_DIR)/data/.done $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
