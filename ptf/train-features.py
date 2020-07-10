@@ -26,11 +26,11 @@ def prepare_train_params(args):
     train_file = args.data_dir + "/train"
     print("Setting train data from: ", train_file, file=sys.stderr)
     train_ds = tf.data.TextLineDataset([train_file]).repeat()
-    train_ds = train_ds.map(lambda x: tf.py_function(func=parse_line_int, inp=[x], Tout=[tf.float32, tf.float32]),
-                            num_parallel_calls=20)
     train_ds = train_ds.shuffle(args.shuffle)
+    train_ds = train_ds.map(lambda x: tf.py_function(func=parse_line_int, inp=[x], Tout=[tf.float32, tf.float32]),
+                            num_parallel_calls=tf.data.experimental.AUTOTUNE)
     train_ds = train_ds.batch(batch_size=batch_size, drop_remainder=True)
-    train_ds = train_ds.prefetch(args.prefetch)
+    train_ds = train_ds.prefetch(tf.data.experimental.AUTOTUNE)
     if not (args.prefetch_device is None):
         print("Prefetch to device: ", args.prefetch_device, file=sys.stderr)
         train_ds = train_ds.apply(tf.data.experimental.prefetch_to_device(args.prefetch_device, 5))
@@ -39,9 +39,9 @@ def prepare_train_params(args):
     print("Setting dev data from : ", dev_file, file=sys.stderr)
     dev_ds = tf.data.TextLineDataset([dev_file])
     dev_ds = dev_ds.map(lambda x: tf.py_function(func=parse_line_int, inp=[x], Tout=[tf.float32, tf.float32]),
-                        num_parallel_calls=20)
+                        num_parallel_calls=tf.data.experimental.AUTOTUNE)
     dev_ds = dev_ds.batch(batch_size=batch_size, drop_remainder=True)
-    dev_ds = dev_ds.prefetch(args.prefetch)
+    dev_ds = dev_ds.prefetch(tf.data.experimental.AUTOTUNE)
     if not (args.prefetch_device is None):
         dev_ds = dev_ds.apply(tf.data.experimental.prefetch_to_device(args.prefetch_device))
 
