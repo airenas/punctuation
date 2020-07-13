@@ -19,7 +19,7 @@ def take_cmd_params(argv):
         epilog="E.g. " + sys.argv[0] + "",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("model", type=str, help="Model file", required=True)
+    parser.add_argument("model", type=str, help="Model file")
     args = parser.parse_args(args=argv)
     return args
 
