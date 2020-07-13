@@ -1,7 +1,5 @@
 import sys
 
-import tensorflow as tf
-
 import model.model as model
 
 if len(sys.argv) > 1:

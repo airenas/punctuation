@@ -32,13 +32,15 @@ $(OUT_DIR)/$(VERSION).0/settings.yml: $(OUT_DIR)/$(VERSION).0/vocabulary | $(OUT
 
 $(OUT_DIR)/models/punctuation/$(VERSION): | $(OUT_DIR)/models
 	rm -rf $@
-	python $(SCRIPT_DIR)/saveAsTF.py $(INPUT_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 $@
+	python $(SCRIPT_DIR)/save_as_tf.py $(INPUT_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 $@
+
+$(OUT_DIR)/$(VERSION).0/info: | $(OUT_DIR)/$(VERSION).0
+	python $(SCRIPT_DIR)/model_info.py $(INPUT_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 > $@
 
 $(WORK_DIR)/$(OUT_FILE): $(OUT_DIR)/$(VERSION).0/settings.yml $(OUT_DIR)/$(VERSION).0/vocabulary \
-	$(OUT_DIR)/models/punctuation/$(VERSION)
+	$(OUT_DIR)/models/punctuation/$(VERSION) $(OUT_DIR)/$(VERSION).0/info
 	cd $(WORK_DIR) && tar -czvf $(OUT_FILE) punctuation
 #################################################################################################
-dev: info $(WORK_DIR)/models/punctuation
 build: info $(WORK_DIR)/$(OUT_FILE)
 #################################################################################################
 clean:
