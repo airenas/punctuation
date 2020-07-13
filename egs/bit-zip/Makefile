@@ -25,6 +25,7 @@ $(OUT_DIR)/$(VERSION).0/settings.yml: $(OUT_DIR)/$(VERSION).0/vocabulary | $(OUT
 	echo "sentenceEnd: ['.', '?', '!']" >> $@
 	echo "timesteps: 50" >> $@
 	echo "unknownWord: <UNK>" >> $@
+	echo "numWord: <NUM>" >> $@
 	echo "sequenceEndWord: </S>" >> $@
 	echo "model: punctuation" >> $@
 	echo "version: $(VERSION)" >> $@
