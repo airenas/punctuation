@@ -1,10 +1,8 @@
 -include Makefile.options.local
 
-SCRIPT_DIR=../../ptf/
-KALDI_ROOT?=../../../kaldi
 TOOLS_ROOT?=../../tools
-INPUT_DIR?=../bit-prepare2/final
+SCRIPT_DIR=../../ptf
+INPUT_FILE?=../../text/BIT_merged_unique.txt
 WORK_DIR?=data
-TOP_WORDS?=5000
+SENTENCES?=10000000000 # take all
 PUT_DIR=$(USER_SERVER):$(REMOTE_DIR)
-maxJobs=4

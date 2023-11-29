@@ -24,14 +24,23 @@ def convert_punctuation_to_readable(punct_token):
     else:
         return punct_token[0]
 
-def convert(words, features):
+
+def convert(words, features, word_function):
     res = np.zeros(features.len() * len(words), dtype=np.float32).reshape((len(words), features.len()))
     for i in range(len(words)):
-        features.setWordFeaturesTo(words[i], res[i])
+        features.setWordFeaturesTo(word_function(words[i]), res[i])
     return res
 
 
-def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_function):
+def change_unk(w):
+    if not (w.startswith("<") and w.endswith(">")):
+        return w
+    if w == '<NUM>' or w == data.END:
+        return w
+    return "<UNK>"
+
+
+def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_function, word_function):
     i = 0
     with tqdm(total=len(text), desc="Punctuating", file=sys.stderr) as pbar:
         while True:
@@ -41,7 +50,7 @@ def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_funct
             if len(subsequence) < MAX_SUBSEQUENCE_LEN:
                 subsequence = subsequence + ([data.END] * (MAX_SUBSEQUENCE_LEN - len(subsequence)))
 
-            converted_subsequence = convert(subsequence, features)
+            converted_subsequence = convert(subsequence, features, word_function)
             shape = converted_subsequence.shape
             a = np.array(converted_subsequence).reshape((1, shape[0], shape[1]))
 
@@ -78,6 +87,7 @@ def restore(f_out, text, features, reverse_punctuation_vocabulary, predict_funct
             i += step
             pbar.update(step)
 
+
 ############################################################################
 def predict(args):
     print("Read Features from: ", args.features, file=sys.stderr)
@@ -86,14 +96,20 @@ def predict(args):
     m.summary(150)
     punctuation_vocabulary = data.toDict(data.PUNCTUATION_VOCABULARY)
     reverse_punctuation_vocabulary = {v: k for k, v in punctuation_vocabulary.items()}
+    print("Read test text: ", args.test, file=sys.stderr)
     input_text = io.open(args.test, 'r', encoding='utf-8').read()
 
     if len(input_text) == 0:
         sys.exit("Input text missing.")
     text = [w for w in input_text.split() if w not in punctuation_vocabulary] + [data.END]
-    predict = lambda x: m.predict(x, verbose=0)
+    w_func = lambda x: x
+    if args.change_unk:
+        print("Change unk's", file=sys.stderr)
+        w_func = lambda x: change_unk(x)
+    predict_func = lambda x: m.predict(x, verbose=0)
     f_out = open(args.out, 'w', encoding='utf-8')
-    restore(f_out, text, feat, reverse_punctuation_vocabulary, predict)
+    print("Restoring punctuation", file=sys.stderr)
+    restore(f_out, text, feat, reverse_punctuation_vocabulary, predict_func, w_func)
 
 
 def take_cmd_params(argv):
@@ -105,6 +121,7 @@ def take_cmd_params(argv):
     parser.add_argument("--test", default='', type=str, help="Test file", required=True)
     parser.add_argument("--out", default='', type=str, help="Output file", required=True)
     parser.add_argument("--features", default='', type=str, help="Features file", required=True)
+    parser.add_argument("--change-unk", action='store_true', help="Change words like '<xxx>' to <UNK>")
     parser.add_argument("--model", default='', type=str, help="Model file", required=True)
     args = parser.parse_args(args=argv)
     return args

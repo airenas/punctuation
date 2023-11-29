@@ -11,7 +11,7 @@ Samples added for [data prepareation](egs/bit-prepare-features) and [training](e
 ## Requirements
 Implementation was tested with *python* 3.7.3. The training code uses modules: 
 ```bash
-pip install tensorflow # or tensorflow-gpu, tested with tensorflow==2.0.0-beta1
+pip install tensorflow # or tensorflow-gpu, tested with tensorflow==2.2.0
 pip install tqdm
 ```
 The optimization of hyper parameters:
@@ -21,16 +21,17 @@ pip install keras
 ```
 
 ## Data preparation
-For the initial data requirements see **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. You can configure punctuation and vocabulary size in the [tensorflow/data/data.py](tensorflow/data/data.py). To prepare the data for the training:
+For the initial data requirements see **[github.com/ottokart/punctuator2](https://github.com/ottokart/punctuator2)**. You can configure punctuation and vocabulary size in the [ptf/data/data.py](ptf/data/data.py). To prepare the data for the training:
 ```bash
-python tensorflow/punctuator2/data.py <initialDataDir> <dataDir>
+python ptf/punctuator2/data.py <initialDataDir> <dataDir>
 ```
+Or see the [egs](egs) for sample scripts 
 
 ## Training
-To train one model, you can configure model parameters in [tensorflow/train.py](tensorflow/train.py). The taining can be performed by:
+To train one model, you can configure model parameters in [ptf/train.py](ptf/train.py). The taining can be performed by:
 ```bash
 mkdir model1 && cd model1
-python ../tensorflow/train.py <dataDir> <modelPrefix>
+python ../ptf/train.py <dataDir> <modelPrefix>
 ```
 The trained model is saved as *keras* hd5 format in the working folder *model1*. 
 
@@ -46,17 +47,17 @@ All models are saved in in the working folder *optim1*.
 ## Prediction, error calculation
 To predict punctuation for a test text:
 ```bash
-python tensorflow/predict.py <testTextFile> <vocaburaly> <hd5ModelFile> <predictedOutputFile>
+python ptf/predict.py <testTextFile> <vocaburaly> <hd5ModelFile> <predictedOutputFile>
 ```
 To evaluate error scores of the prediction:
 ```bash
-python tensorflow/punctuator2/error_calculator.py <testTextFile> <predictedOutputFile>
+python ptf/punctuator2/error_calculator.py <testTextFile> <predictedOutputFile>
 ```
 
 ## Saving as a pure *tensorflow* model
 During the training all models are saved in *keras* format. To save a model in a pure *tensorflow* format there is a script:
 ```bash
-python tensorflow/saveAsTF.py <hd5ModelFile> <tfModelOutputDir>
+python ptf/save_as_tf.py <hd5ModelFile> <tfModelOutputDir>
 ```
 ## Loading model with *go*
 Sample *go* code on how to load the trained tensorflow model: [examples/goload/loadtf.go](examples/goload/loadtf.go). To compile the sample *go* code you need to install *tensorflow* library and configure *LD_LIBRARY_PATH*. See [https://www.tensorflow.org/install/lang_go](https://www.tensorflow.org/install/lang_go)

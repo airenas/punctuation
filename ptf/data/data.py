@@ -2,9 +2,9 @@ import os
 from collections import namedtuple
 
 import numpy as np
+import tensorflow as tf
+import tensorflow.keras as keras
 from tqdm import tqdm
-
-from tensorflow import keras
 
 ####################################################################################
 PUNCTUATION_VOCABULARY = ["_SPACE", ",COMMA", ".PERIOD", "?QUESTIONMARK", "!EXCLAMATIONMARK", ":COLON", ";SEMICOLON",
@@ -33,6 +33,13 @@ def load(file):
                 resY.append(keras.utils.to_categorical(ld[1], num_classes=len(PUNCTUATION_VOCABULARY)))
                 pbar.update(len(l))
     return MData(X=np.array(resX).reshape(len(resX), len(resX[0])), y=np.array(resY), len=len(resX))
+
+
+def get_size(file):
+    with open(file, 'r') as f:
+        for line in f:
+            return int(line)
+    return 0
 
 
 class Generator(keras.utils.Sequence):
@@ -89,3 +96,24 @@ class FeaturesGenerator(keras.utils.Sequence):
 
     def count(self):
         return self.m_data.len
+
+
+def parse_line(t: tf.Tensor, feat, punct_vocab_size: int):
+    s = t.numpy()
+    ld = eval(s)
+    y = keras.utils.to_categorical(ld[1], num_classes=punct_vocab_size)
+
+    X = np.zeros(feat.len() * len(ld[0]), dtype=np.float32).reshape((len(ld[0]), feat.len()))
+    for wi in range(len(ld[0])):
+        feat.setWordFeaturesTo(ld[0][wi], X[wi])
+    return X, y
+
+
+def parse_simple_line(t: tf.Tensor, punct_vocab_size: int):
+    s = t.numpy()
+    ld = eval(s)
+    y = keras.utils.to_categorical(ld[1], num_classes=punct_vocab_size)
+
+    X = np.array(ld[0])
+    # print("shapes x, y", X.shape, y.shape)
+    return X, y
