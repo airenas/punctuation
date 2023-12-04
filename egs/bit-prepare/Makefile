@@ -33,8 +33,19 @@ $(F_DIR)/lt.train.txt: $(WORK_DIR)/text.a5 | $(F_DIR)
 	head -n $$train $^ > $@; \
 	tail -n $$dev2 $^ | head -n $$dev1 > $(F_DIR)/lt.dev.txt; \
 	tail -n $$dev1 $^ > $(F_DIR)/lt.test.txt
+
+$(WORK_DIR)/text.counts: $(WORK_DIR)/text.a5
+	pv $^ | python $(SCRIPT_DIR)/data/clean-punct.py | \
+		python $(SCRIPT_DIR)/data/text-to-counts.py | sort -r -n -k 2 > $@
+
+$(WORK_DIR)/vocab.txt: $(WORK_DIR)/text.counts
+	echo '<UNK>' > $@
+	echo '</S>' >> $@
+	pv $^ | python $(SCRIPT_DIR)/data/counts_to_vocab.py --n $(VOCAB) --drop_unk --leave '<NUM>' >> $@	
+$(F_DIR)/vocab.txt: $(WORK_DIR)/vocab.txt | $(F_DIR)
+	cp $^ $@	
 #################################################################################################
-build: info $(F_DIR)/lt.train.txt
+build: info $(F_DIR)/lt.train.txt $(F_DIR)/vocab.txt
 #################################################################################################
 clean:
 	rm -rf $(WORK_DIR)

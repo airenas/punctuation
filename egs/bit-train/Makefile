@@ -24,8 +24,8 @@ $(WORK_DIR)/predict:
 #################################################################################################
 $(WORK_DIR)/data/.done: | $(WORK_DIR)/data
 	cp $(INPUT_DIR)/final/vocab.txt $(WORK_DIR)/data/vocabulary
-	pv $(INPUT_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text-to-train.py --vocab $(WORK_DIR)/data/vocabulary > $(WORK_DIR)/data/train
-	pv $(INPUT_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text-to-train.py --vocab $(WORK_DIR)/data/vocabulary > $(WORK_DIR)/data/dev
+	pv $(INPUT_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(WORK_DIR)/data/vocabulary > $(WORK_DIR)/data/train
+	pv $(INPUT_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(WORK_DIR)/data/vocabulary > $(WORK_DIR)/data/dev
 	wc -l $(WORK_DIR)/data/train | awk '{print $$1}' > $(WORK_DIR)/data/train.counts
 	wc -l $(WORK_DIR)/data/dev | awk '{print $$1}' > $(WORK_DIR)/data/dev.counts
 	touch $@
