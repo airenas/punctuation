@@ -1,0 +1,10 @@
+-include Makefile.options.local
+
+TOOLS_ROOT?=../../tools
+SCRIPT_DIR=../../ptf
+SCRIPT_L_DIR=../bit-prepare2/local
+INPUT_FILE?=../../text/BIT_merged_unique.txt
+WORK_DIR?=data
+SENTENCES?=10000000000 # take all
+PUT_DIR=$(USER_SERVER):$(REMOTE_DIR)
+MAIN_VOCAB_FILE=../bit-prepare/wrk/final/vocab.txt
