@@ -2,5 +2,4 @@ tqdm~=4.64.1
 numpy~=1.23.3
 tensorflow==2.10.0
 parameter-sherpa
-keras
-
+keras==2.10.0
