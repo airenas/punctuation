@@ -1,10 +1,11 @@
 import sys
 from collections import namedtuple
+
+import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 import data.data as data
 import model.model as model
-import tensorflow as tf
 
 ####################################################################################
 Params = namedtuple('Params', ('vocab', 'trainData', 'validationData', 'hidden', 'wordVecSize',
@@ -49,26 +50,30 @@ def trainModel(params):
         # keras.utils.plot_model(m, 'punc.png')
         # keras.utils.plot_model(m, 'punc_full.png', show_shapes=True)
 
-        print("Training", file=sys.stderr)
+        return train_model(m, params)
 
-        checkpoint = ModelCheckpoint(filepath=params.modelFile,
-                                     monitor='loss',
-                                     verbose=1,
-                                     save_best_only=False,
-                                     mode='min',
-                                     save_freq=int(params.trainSize / params.batchSize))
-        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
-        callbacks = [checkpoint, es]
-        if params.tensorboardDir is not None:
-            tb = tf.keras.callbacks.TensorBoard(log_dir=params.tensorboardDir, histogram_freq=1, profile_batch='10,20')
-            callbacks.append(tb)
-        if params.callback is not None:
-            callbacks.insert(0, params.callback)
 
-        return m.fit(x=params.trainData,
-                     validation_data=params.validationData,
-                     epochs=params.maxEpochs,
-                     verbose=1,
-                     callbacks=callbacks,
-                     steps_per_epoch=int(params.trainSize / params.batchSize),
-                     validation_steps=int(params.validationSize / params.batchSize))
+def train_model(m, params):
+    print("Training", file=sys.stderr)
+
+    checkpoint = ModelCheckpoint(filepath=params.modelFile,
+                                 monitor='loss',
+                                 verbose=1,
+                                 save_best_only=False,
+                                 mode='min',
+                                 save_freq=int(params.trainSize / params.batchSize))
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
+    callbacks = [checkpoint, es]
+    if params.tensorboardDir is not None:
+        tb = tf.keras.callbacks.TensorBoard(log_dir=params.tensorboardDir, histogram_freq=1, profile_batch='10,20')
+        callbacks.append(tb)
+    if params.callback is not None:
+        callbacks.insert(0, params.callback)
+
+    return m.fit(x=params.trainData,
+                 validation_data=params.validationData,
+                 epochs=params.maxEpochs,
+                 verbose=1,
+                 callbacks=callbacks,
+                 steps_per_epoch=int(params.trainSize / params.batchSize),
+                 validation_steps=int(params.validationSize / params.batchSize))
