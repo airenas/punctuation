@@ -22,24 +22,27 @@ def convert_punctuation_to_readable(punct_token):
         return punct_token[0]
 
 
+# @profile
 def restore(output_file, text_iter, word_vocabulary, reverse_punctuation_vocabulary, predict_function, total_words):
-    info = "Punctuating"
-
+    # tr = tracker.SummaryTracker()
     progress_bar = tqdm(desc="Processing", unit=" words", total=total_words)
 
     def fill_text(text):
+        res = []
+        for item in text:
+            res.append(item)
         for item in text_iter:
-            text.append(item)
+            res.append(item)
             progress_bar.update(1)
-            if len(text) >= MAX_SUBSEQUENCE_LEN:
+            if len(res) >= MAX_SUBSEQUENCE_LEN:
                 break
-        return text
+        return res
 
     i = 0
     text = []
     with open(output_file, 'w', encoding='utf-8') as f_out:
         while True:
-            text = fill_text(text[i:]).copy()
+            text = fill_text(text[i:])
             subsequence = text
             if len(subsequence) == 0:
                 break
@@ -84,6 +87,13 @@ def restore(output_file, text_iter, word_vocabulary, reverse_punctuation_vocabul
                 break
 
             i = step
+            # all_objects = muppy.get_objects()
+            # sum1 = summary.summarize(all_objects)
+            # summary.print_(sum1)
+            # tr.print_diff()
+            # print(objgraph.show_most_common_types())
+            # roots = objgraph.get_leaking_objects()
+            # objgraph.show_refs(roots[:3], refcounts=True, filename='roots.png')
 
         progress_bar.close()
 
@@ -105,45 +115,49 @@ def calc_words(iter_w):
     return res
 
 
-############################################################################
-if len(sys.argv) > 1:
-    in_file = sys.argv[1]
-else:
-    sys.exit("Input file path argument missing")
+def main(argv):
+    ############################################################################
+    if len(argv) > 0:
+        in_file = argv[0]
+    else:
+        sys.exit("Input file path argument missing")
 
-if len(sys.argv) > 2:
-    vocab_file = sys.argv[2]
-else:
-    sys.exit("Vocab file path argument missing")
+    if len(argv) > 1:
+        vocab_file = argv[1]
+    else:
+        sys.exit("Vocab file path argument missing")
 
-if len(sys.argv) > 3:
-    m_file = sys.argv[3]
-else:
-    sys.exit("Model file path argument missing")
+    if len(argv) > 2:
+        m_file = argv[2]
+    else:
+        sys.exit("Model file path argument missing")
 
-if len(sys.argv) > 4:
-    output_file = sys.argv[4]
-else:
-    sys.exit("Output file path argument missing")
-############################################################################
+    if len(argv) > 3:
+        output_file = argv[3]
+    else:
+        sys.exit("Output file path argument missing")
+    ############################################################################
 
-print('Loading vocab')
-vocab = data.readVocabulary(vocab_file)
-print('Loading model')
-m = model.load(m_file)
-m.summary(150)
+    print('Loading vocab')
+    vocab = data.readVocabulary(vocab_file)
+    print('Loading model')
+    m = model.load(m_file)
+    m.summary(150)
 
-punctuation_vocabulary = data.toDict(data.PUNCTUATION_VOCABULARY)
+    punctuation_vocabulary = data.toDict(data.PUNCTUATION_VOCABULARY)
 
-reverse_word_vocabulary = {v: k for k, v in vocab.items()}
-reverse_punctuation_vocabulary = {v: k for k, v in punctuation_vocabulary.items()}
+    reverse_punctuation_vocabulary = {v: k for k, v in punctuation_vocabulary.items()}
 
-predict = lambda x: m.predict(x, verbose=0)
+    predict = lambda x: m.predict(x, verbose=0)
 
-total = calc_words(word_iterator(in_file, punctuation_vocabulary))
-print(f'Test words {total}')
+    total = calc_words(word_iterator(in_file, punctuation_vocabulary))
+    print(f'Test words {total}')
 
-restore(output_file, word_iterator(in_file, punctuation_vocabulary), vocab, reverse_punctuation_vocabulary, predict,
-        total)
+    restore(output_file, word_iterator(in_file, punctuation_vocabulary), vocab, reverse_punctuation_vocabulary, predict,
+            total)
 
-print("Done")
+    print("Done")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
