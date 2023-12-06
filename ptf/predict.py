@@ -22,10 +22,10 @@ def convert_punctuation_to_readable(punct_token):
         return punct_token[0]
 
 
-def restore(output_file, text_iter, word_vocabulary, reverse_punctuation_vocabulary, predict_function):
+def restore(output_file, text_iter, word_vocabulary, reverse_punctuation_vocabulary, predict_function, total_words):
     info = "Punctuating"
 
-    progress_bar = tqdm(desc="Processing", unit=" words")
+    progress_bar = tqdm(desc="Processing", unit=" words", total=total_words)
 
     def fill_text(text):
         for item in text_iter:
@@ -98,6 +98,13 @@ def word_iterator(file_path, punctuation_vocabulary):
     yield data.END
 
 
+def calc_words(iter_w):
+    res = 0
+    for w in iter_w:
+        res += 1
+    return res
+
+
 ############################################################################
 if len(sys.argv) > 1:
     in_file = sys.argv[1]
@@ -133,6 +140,10 @@ reverse_punctuation_vocabulary = {v: k for k, v in punctuation_vocabulary.items(
 
 predict = lambda x: m.predict(x, verbose=0)
 
-restore(output_file, word_iterator(in_file, punctuation_vocabulary), vocab, reverse_punctuation_vocabulary, predict)
+total = calc_words(word_iterator(in_file, punctuation_vocabulary))
+print(f'Test words {total}')
+
+restore(output_file, word_iterator(in_file, punctuation_vocabulary), vocab, reverse_punctuation_vocabulary, predict,
+        total)
 
 print("Done")
