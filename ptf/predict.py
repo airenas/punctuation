@@ -39,7 +39,7 @@ def restore(output_file, text_iter, word_vocabulary, reverse_punctuation_vocabul
     text = []
     with open(output_file, 'w', encoding='utf-8') as f_out:
         while True:
-            text = fill_text(text[i:])
+            text = fill_text(text[i:]).copy()
             subsequence = text
             if len(subsequence) == 0:
                 break
