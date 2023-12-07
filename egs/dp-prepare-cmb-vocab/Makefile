@@ -64,7 +64,7 @@ prepare/data: $(F_CMB_DIR)/lt.train.txt $(F_CMB_DIR)/lt.dev.txt $(F_CMB_DIR)/lt.
 
 #################################################################################################
 $(WORK_DIR)/predict/test.txt: $(F_DIR)/lt.test.txt | $(WORK_DIR)/predict
-	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.test.txt $(MAIN_VOCAB_FILE) $(MAIN_MODEL_FILE) \
+	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.test.txt $(F_CMB_DIR)/vocab.txt $(MAIN_MODEL_FILE) \
 		$(WORK_DIR)/predict/test.txt
 $(WORK_DIR)/score.txt: $(WORK_DIR)/predict/test.txt | $(WORK_DIR)/predict
 	python $(SCRIPT_DIR)/punctuator2/error_calculator.py $(F_DIR)/lt.test.txt $(WORK_DIR)/predict/test.txt > $@
@@ -72,8 +72,8 @@ $(WORK_DIR)/score.txt: $(WORK_DIR)/predict/test.txt | $(WORK_DIR)/predict
 score: $(WORK_DIR)/score.txt
 	cat $^
 #################################################################################################
-$(WORK_DIR)/predict/test_new.txt: $(F_DIR)/lt.test.txt | $(WORK_DIR)/predict
-	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.test.txt $(MAIN_VOCAB_FILE) $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
+$(WORK_DIR)/predict/test_new.txt: $(F_DIR)/lt.test.txt $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
+	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.test.txt $(F_CMB_DIR)/vocab.txt $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
 		$(WORK_DIR)/predict/test_new.txt
 $(WORK_DIR)/score_new.txt: $(WORK_DIR)/predict/test_new.txt | $(WORK_DIR)/predict
 	python $(SCRIPT_DIR)/punctuator2/error_calculator.py $(F_DIR)/lt.test.txt $(WORK_DIR)/predict/test_new.txt > $@
@@ -81,8 +81,8 @@ $(WORK_DIR)/score_new.txt: $(WORK_DIR)/predict/test_new.txt | $(WORK_DIR)/predic
 score/new: $(WORK_DIR)/score_new.txt
 	cat $^
 #################################################################################################
-$(WORK_DIR)/predict/dev.txt: $(F_DIR)/lt.dev.txt | $(WORK_DIR)/predict
-	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.dev.txt $(MAIN_VOCAB_FILE) $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
+$(WORK_DIR)/predict/dev.txt: $(F_DIR)/lt.dev.txt $(WORK_DIR)/model/.done | $(WORK_DIR)/predict
+	python $(SCRIPT_DIR)/predict.py $(F_DIR)/lt.dev.txt $(F_CMB_DIR)/vocab.txt $(WORK_DIR)/model/$(MODEL_PREFIX)_$(MODEL_TEST).h5 \
 		$(WORK_DIR)/predict/dev.txt
 $(WORK_DIR)/score_dev.txt: $(WORK_DIR)/predict/dev.txt | $(WORK_DIR)/predict
 	python $(SCRIPT_DIR)/punctuator2/error_calculator.py $(F_DIR)/lt.dev.txt $(WORK_DIR)/predict/dev.txt > $@
@@ -91,8 +91,8 @@ score/dev: $(WORK_DIR)/score_dev.txt
 	cat $^	
 #################################################################################################
 $(WORK_DIR)/data/.done: $(WORK_DIR)/final/lt.train.txt | $(WORK_DIR)/data
-	pv $(WORK_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(MAIN_VOCAB_FILE) > $(WORK_DIR)/data/train
-	pv $(WORK_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(MAIN_VOCAB_FILE) > $(WORK_DIR)/data/dev
+	pv $(WORK_DIR)/final/lt.train.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(F_CMB_DIR)/vocab.txt > $(WORK_DIR)/data/train
+	pv $(WORK_DIR)/final/lt.dev.txt | python $(SCRIPT_DIR)/data/text_to_train.py --vocab $(F_CMB_DIR)/vocab.txt > $(WORK_DIR)/data/dev
 	wc -l $(WORK_DIR)/data/train | awk '{print $$1}' > $(WORK_DIR)/data/train.counts
 	wc -l $(WORK_DIR)/data/dev | awk '{print $$1}' > $(WORK_DIR)/data/dev.counts
 	touch $@
