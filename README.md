@@ -9,9 +9,10 @@ Added support of [Kaldi](https://github.com/kaldi-asr/kaldi) like word features.
 Samples added for [data prepareation](egs/bit-prepare-features) and [training](egs/bit-train-features). 
 
 ## Requirements
-Implementation was tested with *python* 3.7.3. The training code uses modules: 
+conda create --name punct python=3.10
+Implementation was tested with *python* 3.10. The training code uses modules: 
 ```bash
-pip install tensorflow # or tensorflow-gpu, tested with tensorflow==2.2.0
+pip install -r requirements
 pip install tqdm
 ```
 The optimization of hyper parameters:

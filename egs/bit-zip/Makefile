@@ -27,7 +27,7 @@ $(OUT_DIR)/$(VERSION).0/settings.yml: $(OUT_DIR)/$(VERSION).0/vocabulary | $(OUT
 	echo "unknownWord: <UNK>" >> $@
 	echo "numWord: <NUM>" >> $@
 	echo "sequenceEndWord: </S>" >> $@
-	echo "model: punctuation dp" >> $@
+	echo "model: punctuation" >> $@
 	echo "version: $(VERSION)" >> $@
 
 $(OUT_DIR)/models/punctuation/$(VERSION): $(MODEL) | $(OUT_DIR)/models
@@ -43,8 +43,28 @@ $(WORK_DIR)/$(OUT_FILE): $(OUT_DIR)/$(VERSION).0/settings.yml $(OUT_DIR)/$(VERSI
 #################################################################################################
 build: info $(WORK_DIR)/$(OUT_FILE)
 #################################################################################################
+test/curl:
+	curl -d @samples/test.json -X POST http://localhost:8501/v1/models/punctuation:predict | jq .
+test/grpcurl:
+	grpcurl  \
+	-import-path ./serving/ \
+	-import-path ./tensorflow/ \
+	-proto serving/tensorflow_serving/apis/prediction_service.proto \
+	-d @ \
+	-plaintext 0.0.0.0:8500 tensorflow.serving.PredictionService/Predict <samples/grpc-test.json
+
+test/grpcurl-info:
+	grpcurl  \
+	-import-path ./serving/ \
+	-import-path ./tensorflow/ \
+	-proto serving/tensorflow_serving/apis/prediction_service.proto \
+	-d '{"model_spec":{"name":"punctuation"},"metadata_field":"signature_def"}' -plaintext 0.0.0.0:8500 tensorflow.serving.PredictionService/GetModelMetadata		
+clone/proto:
+	git clone https://github.com/tensorflow/serving.git
+	git clone https://github.com/tensorflow/tensorflow.git
+#################################################################################################
 clean:
-	rm -rf $(WORK_DIR)
+	rm -rf $(WORK_DIR) serving tensorflow
 #################################################################################################
 .PHONY: info clean
 #################################################################################################
